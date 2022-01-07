@@ -32,15 +32,17 @@ class Station {
         iconSize: [32, 32]
     });
 
-    constructor(id, lon, lat, name, operator, capacity, fee) {
+    constructor(id, lon, lat, name, operator, city, street, housenumber, capacity, fee) {
         this.id = id;
         this.lon = lon;
         this.lat = lat;
         this.name = name;
         this.operator = operator;
-        this.capacity = capacity;
         this.fee = fee;
-        this.capacity = 0;
+        this.capacity = capacity;
+        this.city = city;
+        this.street = street;
+        this.housenumber = housenumber;
     }
 
     getLonLat() {
@@ -55,18 +57,42 @@ class Station {
     }
 
     getOperatorName() {
-        if (this.name == null || this.name == "")
+        if (this.operator == null || this.operator == "")
             return "Unknown operator"
         else
             return this.operator
     }
 
     getNumberOfChargers() {
-        return this.capacity
+        if (this.capacity == null || this.capacity == "")
+            return 0
+        else
+            return this.capacity
+    }
+
+    getCity() {
+        if (this.city == null || this.city == "")
+            return "Unknown city"
+        else
+            return this.city
+    }
+
+    getStreet() {
+        if (this.street == null || this.street == "")
+            return "Unknown street"
+        else
+            return this.street
+    }
+
+    getHousenumber() {
+        if (this.housenumber == null || this.housenumber == "")
+            return "Unknown house number"
+        else
+            return this.housenumber
     }
 
     isFree() {
-        if (this.name == null || this.name == "")
+        if (this.fee === null)
             return "Unknown"
         else {
             if (this.fee)
@@ -74,22 +100,6 @@ class Station {
             else
                 return "yes"
         }
-    }
-
-    getNumberOfRates() {
-        return 1
-    }
-
-    getRatings() {
-        return 5
-    }
-
-    getNumberOfComments() {
-        return 1
-    }
-
-    getComments() {
-        return "a comment"
     }
 
     getIcon() {
