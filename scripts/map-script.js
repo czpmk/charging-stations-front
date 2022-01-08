@@ -90,6 +90,7 @@ async function openStationInfo(stationId) {
     }
 
     $("#stationCommentsLink").on("click", function(e) { openStationComments(stationId) })
+    $("#addCommentButton").on("click", function(e) { submitComment(stationId) })
     $("#stationInfoModal").modal("show")
 }
 
@@ -118,18 +119,31 @@ async function openStationComments(stationId) {
 
         $("#commentsModalBody").append('<p>' + s.comments[i].email + '</p>')
         $("#commentsModalBody").append('<h6><i>' + s.comments[i].comment + '</i></h6>')
-
     }
 
     $("#stationCommentsModal").modal("show")
 }
 
-function submitComment() {
+async function submitComment(stationId) {
     let newComment = $("#newCommentBox").val()
     $("#newCommentBox").val("")
-    console.log(newComment)
-        // todo: try add comment
-    $("#stationCommentsModal").modal("hide")
+
+    if (newComment.length == 0)
+        return
+
+    let data = JSON.stringify({
+        "station_id": stationId,
+        "comment": newComment
+    })
+    console.log(data)
+    await fetch("http://localhost:3011/comments/new?token=" + session_token, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: data
+    }).then(data => data.json())
 }
 
 function closeStationComments() {

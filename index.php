@@ -87,7 +87,7 @@ session_start();
                     </div>
                     <div class="modal-footer" id="commentsModalFooter">
                         <input type="text" class="form-control" id="newCommentBox">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="submitComment()">Add Comment</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="addCommentButton">Add Comment</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeStationComments()">Close</button>
                     </div>
                 </div>
