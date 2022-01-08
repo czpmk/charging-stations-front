@@ -32,17 +32,32 @@ class Station {
         iconSize: [32, 32]
     });
 
-    constructor(id, lon, lat, name, operator, city, street, housenumber, capacity, fee) {
-        this.id = id;
-        this.lon = lon;
-        this.lat = lat;
-        this.name = name;
-        this.operator = operator;
-        this.fee = fee;
-        this.capacity = capacity;
-        this.city = city;
-        this.street = street;
-        this.housenumber = housenumber;
+    constructor(station_data) {
+        this.id = station_data.id;
+        this.lon = station_data.longitude;
+        this.lat = station_data.latitude;
+        this.name = station_data.name;
+        this.operator = station_data.operator;
+        this.fee = station_data.fee;
+        this.capacity = station_data.capacity;
+        this.city = station_data.city;
+        this.street = station_data.street;
+        this.housenumber = station_data.housenumber;
+        this.chargers = {};
+        this.comments = {};
+        this.rates = {};
+    }
+
+    addCharger(charger) {
+        this.chargers[charger.id] = new Charger(charger);
+    }
+
+    addComment(comment) {
+        this.comments[comment.id] = new Comment(comment);
+    }
+
+    addRate(rate) {
+        this.rates[rate.id] = new Rate(rate);
     }
 
     getLonLat() {
@@ -51,14 +66,14 @@ class Station {
 
     getName() {
         if (this.name == null || this.name == "")
-            return "Unknown station"
+            return "Unknown"
         else
             return this.name
     }
 
     getOperatorName() {
         if (this.operator == null || this.operator == "")
-            return "Unknown operator"
+            return "Unknown"
         else
             return this.operator
     }
@@ -70,23 +85,27 @@ class Station {
             return this.capacity
     }
 
+    getNumberOfComments() {
+        return Object.keys(this.comments).length
+    }
+
     getCity() {
         if (this.city == null || this.city == "")
-            return "Unknown city"
+            return "Unknown"
         else
             return this.city
     }
 
     getStreet() {
         if (this.street == null || this.street == "")
-            return "Unknown street"
+            return "Unknown"
         else
             return this.street
     }
 
     getHousenumber() {
         if (this.housenumber == null || this.housenumber == "")
-            return "Unknown house number"
+            return "Unknown"
         else
             return this.housenumber
     }
@@ -100,6 +119,18 @@ class Station {
             else
                 return "yes"
         }
+    }
+
+    getRating() {
+        let sum = 0.0
+        let nRates = Object.keys(this.rates).length
+        if (nRates == 0)
+            return sum
+
+        for (const [k, v] of Object.entries(this.rates))
+            sum += v.rate
+
+        return (sum / nRates).toFixed(1)
     }
 
     getIcon() {

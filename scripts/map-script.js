@@ -14,35 +14,22 @@ async function init() {
 
     await loadStations()
 
-    for (let k in stations) {
-        addStationToMap(stations[k])
-    }
+    Object.entries(stations).forEach(([k, v]) => { addStationToMap(v) })
 }
 
 async function loadStations() {
-    let response = await fetch("http://localhost:3011/stations?token=" + session_token).then(data => data.json())
-
-    if (!response.valid) {
-        alert("Internal application error")
-        return
-    }
-
-    let data = response.results
-
-    let record = 0
-    for (let idx in data) {
-        record = data[idx]
-        stations[record.id] = new Station(
-            record.id,
-            record.longitude,
-            record.latitude,
-            record.name,
-            record.operator,
-            record.city,
-            record.street,
-            record.housenumber,
-            record.capacity,
-            record.fee)
+    let stations_resp = await fetch("http://localhost:3011/stations?token=" + session_token).then(data => data.json())
+    let chargers_resp = await fetch("http://localhost:3011/chargers?token=" + session_token).then(data => data.json())
+    let comments_resp = await fetch("http://localhost:3011/comments?token=" + session_token).then(data => data.json())
+    let ratings_resp = await fetch("http://localhost:3011/ratings?token=" + session_token).then(data => data.json())
+    if (!stations_resp.valid || !chargers_resp.valid || !comments_resp.valid || !ratings_resp.valid) {
+        alert("Internal application error - could not get server response")
+        return;
+    } else {
+        stations_resp.results.forEach(s => { stations[s.id] = new Station(s) })
+        chargers_resp.results.forEach(c => { if (stations.hasOwnProperty(c.station_id)) stations[c.station_id].addCharger(c) })
+        comments_resp.results.forEach(c => { if (stations.hasOwnProperty(c.station_id)) stations[c.station_id].addComment(c) })
+        ratings_resp.results.forEach(r => { if (stations.hasOwnProperty(r.station_id)) stations[r.station_id].addRate(r) })
     }
 }
 
@@ -56,45 +43,6 @@ function addStationToMap(station) {
         .on('mouseout', function(e) { this.closePopup() })
         .on('click', function(e) { openStationInfo(station.id) })
         .addTo(map)
-}
-
-async function getRatings(stationId) {
-    let response = await fetch("http://localhost:3011/ratings?token=" + session_token + "&station_id=" + stationId).then(data => data.json())
-
-    if (!response.valid) {
-        alert("Internal application error")
-        return
-    }
-    if (response.length == 0)
-        return new Rates([], response.length)
-    else
-        return new Rates(response.results, response.length)
-}
-
-async function getComments(stationId) {
-    let response = await fetch("http://localhost:3011/comments?token=" + session_token + "&station_id=" + stationId).then(data => data.json())
-
-    if (!response.valid) {
-        alert("Internal application error")
-        return
-    }
-    if (response.length == 0)
-        return new Comments([], response.length)
-    else
-        return new Comments(response.results, response.length)
-}
-
-async function getChargers(stationId) {
-    let response = await fetch("http://localhost:3011/chargers?token=" + session_token + "&station_id=" + stationId).then(data => data.json())
-
-    if (!response.valid) {
-        alert("Internal application error")
-        return
-    }
-    if (response.length == 0)
-        return new Chargers([], response.length)
-    else
-        return new Chargers(response.results, response.length)
 }
 
 function createAcordeonSection(chargerIndex, chargerName) {
@@ -115,15 +63,12 @@ function createAcordeonSection(chargerIndex, chargerName) {
 
 async function openStationInfo(stationId) {
     let s = stations[stationId]
-    let rates = await getRatings(stationId)
-    let comments = await getComments(stationId)
-    let chargers = await getChargers(stationId)
 
     $("#accordionPanelsChargers").empty()
 
     $("#stationName").first().text(s.getName())
-    $("#stationRatingsView").first().text("Rating " + rates.getMean().toFixed(1) + "/5")
-    $("#stationCommentsLink").first().text("Comments (" + comments.getNumberOfComments() + ")")
+    $("#stationRatingsView").first().text("Rating " + s.getRating() + "/5")
+    $("#stationCommentsLink").first().text("Comments (" + s.getNumberOfComments() + ")")
     $("#stationOperatorName").first().text("Operator : " + s.getOperatorName())
     $("#stationCity").first().text("City : " + s.getCity())
     $("#stationStreet").first().text("Street : " + s.getStreet())
@@ -132,19 +77,19 @@ async function openStationInfo(stationId) {
     $("#stationCapacity").first().text("Number of chargers : " + s.getNumberOfChargers())
 
     // process chargers
-    for (let i in chargers.getChargers()) {
+    let keys = Object.keys(s.chargers)
+    for (let i = 0; i < keys.length; i++) {
         let chargerIndex = (parseInt(i) + 1).toString()
         let chargerName = "Charger " + chargerIndex
         let bodyItemTag = createAcordeonSection(chargerIndex, chargerName)
 
-        const chargerData = chargers.getChargerData(i)
-        $("#" + bodyItemTag).append('<h6 class="chargerInfo">Voltage: ' + chargerData.voltage + '</h6>')
-        $("#" + bodyItemTag).append('<h6 class="chargerInfo">Amperage: ' + chargerData.amperage + '</h6>')
-        $("#" + bodyItemTag).append('<h6 class="chargerInfo">Plug type: ' + chargerData.plug_type + '</h6>')
+        const chargerData = s.chargers[keys[i]]
+        $("#" + bodyItemTag).append('<h6 class="chargerInfo">Voltage: ' + chargerData.getVoltage() + '</h6>')
+        $("#" + bodyItemTag).append('<h6 class="chargerInfo">Amperage: ' + chargerData.getAmperage() + '</h6>')
+        $("#" + bodyItemTag).append('<h6 class="chargerInfo">Plug type: ' + chargerData.getPlugType() + '</h6>')
     }
 
     $("#stationCommentsLink").on("click", function(e) { openStationComments(stationId) })
-
     $("#stationInfoModal").modal("show")
 }
 
@@ -154,32 +99,37 @@ function closeStationInfo() {
 
 async function openStationComments(stationId) {
     $("#stationInfoModal").modal("hide")
-    let comments = await getComments(stationId)
+    let s = stations[stationId]
 
     $("#commentsModalBody").empty()
     $("#commentsModalHead").empty()
 
-    // $("#commentsModalHead").append('<h5>Comments:</h5>')
-    $("#commentsModalHead").append('<h5>' + stations[stationId].getName() + '</h5>')
+    $("#commentsModalHead").append('<h5>' + s.getName() + '</h5>')
 
-    if (comments.getNumberOfComments() == 0)
+    if (s.getNumberOfComments() == 0) {
         $("#commentsModalBody").append('<h6><i>No comments.</i></h6>')
-
-    let hasAny = false
-    for (let i in comments.getComments()) {
-        if (!hasAny) {
-            hasAny = true
-        } else {
+    }
+    let isFirst = true
+    for (let i in s.comments) {
+        if (isFirst)
+            isFirst = false
+        else
             $("#commentsModalBody").append("<hr>")
-        }
 
-        let commentIdx = (parseInt(i) + 1).toString()
-        commentsModalBody
-        $("#commentsModalBody").append('<p>' + comments.getCommentAt(i).email + '</p>')
-        $("#commentsModalBody").append('<h6><i>' + comments.getCommentAt(i).comment + '</i></h6>')
+        $("#commentsModalBody").append('<p>' + s.comments[i].email + '</p>')
+        $("#commentsModalBody").append('<h6><i>' + s.comments[i].comment + '</i></h6>')
+
     }
 
     $("#stationCommentsModal").modal("show")
+}
+
+function submitComment() {
+    let newComment = $("#newCommentBox").val()
+    $("#newCommentBox").val("")
+    console.log(newComment)
+        // todo: try add comment
+    $("#stationCommentsModal").modal("hide")
 }
 
 function closeStationComments() {

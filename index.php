@@ -21,9 +21,9 @@ session_start();
     <link rel="stylesheet" href="stylesheets/stylesheet.css">
     <script src="scripts/map-script.js"></script>
     <script src="scripts/station.js"></script>
-    <script src="scripts/rates.js"></script>
-    <script src="scripts/comments.js"></script>
-    <script src="scripts/chargers.js"></script>
+    <script src="scripts/rate.js"></script>
+    <script src="scripts/comment.js"></script>
+    <script src="scripts/charger.js"></script>
 </head>
 
 <body>
@@ -77,14 +77,17 @@ session_start();
             </div>
         </div>
         <!-- COMMENTS MODAL -->
-        <div class="modal fade modal-dialog-scrollable" id="stationCommentsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+        <div class="modal fade" id="stationCommentsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable" role="document">
                 <div class="modal-content">
                     <div class="modal-header" id="commentsModalHead">
                     </div>
                     <div class="modal-body" id="commentsModalBody">
+
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer" id="commentsModalFooter">
+                        <input type="text" class="form-control" id="newCommentBox">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="submitComment()">Add Comment</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeStationComments()">Close</button>
                     </div>
                 </div>
