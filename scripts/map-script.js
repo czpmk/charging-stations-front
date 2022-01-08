@@ -143,9 +143,45 @@ async function openStationInfo(stationId) {
         $("#" + bodyItemTag).append('<h6 class="chargerInfo">Plug type: ' + chargerData.plug_type + '</h6>')
     }
 
+    $("#stationCommentsLink").on("click", function(e) { openStationComments(stationId) })
+
     $("#stationInfoModal").modal("show")
 }
 
 function closeStationInfo() {
     $("#stationInfoModal").modal("hide")
+}
+
+async function openStationComments(stationId) {
+    $("#stationInfoModal").modal("hide")
+    let comments = await getComments(stationId)
+
+    $("#commentsModalBody").empty()
+    $("#commentsModalHead").empty()
+
+    // $("#commentsModalHead").append('<h5>Comments:</h5>')
+    $("#commentsModalHead").append('<h5>' + stations[stationId].getName() + '</h5>')
+
+    if (comments.getNumberOfComments() == 0)
+        $("#commentsModalBody").append('<h6><i>No comments.</i></h6>')
+
+    let hasAny = false
+    for (let i in comments.getComments()) {
+        if (!hasAny) {
+            hasAny = true
+        } else {
+            $("#commentsModalBody").append("<hr>")
+        }
+
+        let commentIdx = (parseInt(i) + 1).toString()
+        commentsModalBody
+        $("#commentsModalBody").append('<p>' + comments.getCommentAt(i).email + '</p>')
+        $("#commentsModalBody").append('<h6><i>' + comments.getCommentAt(i).comment + '</i></h6>')
+    }
+
+    $("#stationCommentsModal").modal("show")
+}
+
+function closeStationComments() {
+    $("#stationCommentsModal").modal("hide")
 }

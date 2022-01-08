@@ -58,8 +58,8 @@ session_start();
                         <h5 class="modal-title" id="stationName"></h5>
                     </div>
                     <div class="modal-body">
-                        <button type="button" class="btn btn-lg btn-outline-info" id="stationRatingsView">asd</button>
-                        <button type="button" class="btn btn-lg btn-outline-warning" id="stationCommentsLink">asd</button>
+                        <button type="button" class="btn btn-lg btn-outline-info" id="stationRatingsView"></button>
+                        <button type="button" class="btn btn-lg btn-outline-warning" id="stationCommentsLink"></button>
                         <h6 class="modal-subtitle" id="stationOperatorName"></h6>
                         <h6 class="modal-subtitle" id="stationCity"></h6>
                         <h6 class="modal-subtitle" id="stationStreet"></h6>
@@ -77,9 +77,19 @@ session_start();
             </div>
         </div>
         <!-- COMMENTS MODAL -->
-        <!-- <div class="modal-dialog modal-dialog-scrollable" id="stationCommentsModal">
-
-        </div> -->
+        <div class="modal fade modal-dialog-scrollable" id="stationCommentsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" id="commentsModalHead">
+                    </div>
+                    <div class="modal-body" id="commentsModalBody">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeStationComments()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 
