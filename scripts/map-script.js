@@ -167,14 +167,12 @@ async function openStationRate(stationId) {
 
 async function submitRate(stationId) {
     let newRate = $("input[name=rateOption]:checked").val()
-    console.log($("input[name=rateOption]:checked").val())
     $("#addRateButton").off("click")
 
     let data = JSON.stringify({
         "station_id": stationId,
         "rate": newRate
     })
-    console.log(data)
 
     let errorDetails = 0
     let res = await fetch("http://localhost:3011/ratings/new?token=" + session_token, {
