@@ -148,6 +148,8 @@ async function submitComment(stationId) {
         },
         body: data
     }).then(data => data.json())
+
+    $("#stationCommentsModal").modal("hide")
 }
 
 function closeStationComments() {
