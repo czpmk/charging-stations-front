@@ -2,7 +2,7 @@ window.onload = init;
 
 let eti_coords = { "lon": 18.612704654420106, "lat": 54.37165722576064 }
 let stations = {}
-let session_token = "54db820273fa4c439d4cc78b8e4c18b4"
+let session_token = "eb8c43c8fd0e411887716f6399476318"
 let map = 0
 
 async function init() {
@@ -67,7 +67,7 @@ async function openStationInfo(stationId) {
     $("#accordionPanelsChargers").empty()
 
     $("#stationName").first().text(s.getName())
-    $("#stationRatingsView").first().text("Rating " + s.getRating() + "/5")
+    $("#stationRatingsLink").first().text("Rating " + s.getRating() + "/5")
     $("#stationCommentsLink").first().text("Comments (" + s.getNumberOfComments() + ")")
     $("#stationOperatorName").first().text("Operator : " + s.getOperatorName())
     $("#stationCity").first().text("City : " + s.getCity())
@@ -88,9 +88,12 @@ async function openStationInfo(stationId) {
         $("#" + bodyItemTag).append('<h6 class="chargerInfo">Amperage: ' + chargerData.getAmperage() + '</h6>')
         $("#" + bodyItemTag).append('<h6 class="chargerInfo">Plug type: ' + chargerData.getPlugType() + '</h6>')
     }
+    $("#stationRatingsLink").on("click", function(e) { openStationRate(stationId) })
+    $("#addRateButton").on("click", function(e) { submitRate(stationId) })
 
     $("#stationCommentsLink").on("click", function(e) { openStationComments(stationId) })
     $("#addCommentButton").on("click", function(e) { submitComment(stationId) })
+
     $("#stationInfoModal").modal("show")
 }
 
@@ -127,6 +130,7 @@ async function openStationComments(stationId) {
 async function submitComment(stationId) {
     let newComment = $("#newCommentBox").val()
     $("#newCommentBox").val("")
+    $("#addCommentButton").off("click")
 
     if (newComment.length == 0)
         return
@@ -135,7 +139,7 @@ async function submitComment(stationId) {
         "station_id": stationId,
         "comment": newComment
     })
-    console.log(data)
+
     await fetch("http://localhost:3011/comments/new?token=" + session_token, {
         method: 'POST',
         headers: {
@@ -148,4 +152,47 @@ async function submitComment(stationId) {
 
 function closeStationComments() {
     $("#stationCommentsModal").modal("hide")
+}
+
+async function openStationRate(stationId) {
+    $("#stationInfoModal").modal("hide")
+    let s = stations[stationId]
+
+    $("#ratesModalHead").empty()
+
+    $("#ratesModalHead").append('<h5>' + s.getName() + '</h5>')
+
+    $("#stationRateModal").modal("show")
+}
+
+async function submitRate(stationId) {
+    let newRate = $("input[name=rateOption]:checked").val()
+    console.log($("input[name=rateOption]:checked").val())
+    $("#addRateButton").off("click")
+
+    let data = JSON.stringify({
+        "station_id": stationId,
+        "rate": newRate
+    })
+    console.log(data)
+
+    let errorDetails = 0
+    let res = await fetch("http://localhost:3011/ratings/new?token=" + session_token, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: data
+    }).then(data => data.json())
+
+    if (!res.valid && res.message == "OPERATION_NOT_ALLOWED")
+        console.log("already rated be the user")
+        // TODO implementacja bledu
+
+    $("#stationRateModal").modal("hide")
+}
+
+function cancelStationRate() {
+    $("#stationRateModal").modal("hide")
 }
