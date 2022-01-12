@@ -1,22 +1,3 @@
-window.onload = init;
-
-let eti_coords = { "lon": 18.612704654420106, "lat": 54.37165722576064 }
-let stations = {}
-let session_token = "eb8c43c8fd0e411887716f6399476318"
-let map = 0
-
-async function init() {
-    map = L.map('map').setView([eti_coords.lat, eti_coords.lon], 13);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    await loadStations()
-
-    Object.entries(stations).forEach(([k, v]) => { addStationToMap(v) })
-}
-
 async function loadStations() {
     let stations_resp = await fetch("http://localhost:3011/stations?token=" + session_token).then(data => data.json())
     let chargers_resp = await fetch("http://localhost:3011/chargers?token=" + session_token).then(data => data.json())
