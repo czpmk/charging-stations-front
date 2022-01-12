@@ -18,8 +18,13 @@ session_start();
     <link rel="stylesheet" href="node_modules/leaflet/dist/leaflet.css" />
     <script src="node_modules/leaflet/dist/leaflet.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+
     <link rel="stylesheet" href="stylesheets/stylesheet.css">
-    <script src="scripts/map-script.js"></script>
+    <script src="scripts/user-utils.js"></script>
+    <script src="scripts/map-utils.js"></script>
+    <script src="scripts/map.js"></script>
     <script src="scripts/station.js"></script>
     <script src="scripts/rate.js"></script>
     <script src="scripts/comment.js"></script>
@@ -32,22 +37,20 @@ session_start();
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
                 <a class="navbar-brand" href="http://localhost/charging-stations-front">Charging Stations</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link disabled">Search</a>
                         </li>
                     </ul>
-                    <a class="nav-link disabled">User</a>
+                    <div id="userLink"><button class="btn">User</button></div>
+                    <div id="logOutLink"><button class="btn">Log out</button></div>
                 </div>
 
             </div>
         </nav>
         <!-- MAP -->
-        <div class="h-100">
+        <div class="h-100" id="mapSection">
             <div id="map" class="h-100"></div>
         </div>
         <!-- STATION INFO MODAL -->
@@ -100,13 +103,6 @@ session_start();
                     <div class="modal-header" id="ratesModalHead">
                     </div>
                     <div class="modal-body" id="ratesModalBody">
-                        <!-- <div class="btn-toolbar justify-content-center" role="toolbar" id="dupa" aria-label="Toolbar with button groups">
-                                <button type="button" value="1" name="toggleRate" class="btn btn-danger">1</button>
-                                <button type="button" value="2" name="toggleRate" class="btn btn-outline-danger">2</button>
-                                <button type="button" value="3" name="toggleRate" class="btn btn-outline-warning">3</button>
-                                <button type="button" value="4" name="toggleRate" class="btn btn-outline-success">4</button>
-                                <button type="button" value="5" name="toggleRate" class="btn btn-success">5</button>
-                        </div> -->
                         <div class="btn-toolbar justify-content-center" role="toolbar" id="dupa" aria-label="radioControlRate">
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="rateOption" id="rateOption1" value=1>
