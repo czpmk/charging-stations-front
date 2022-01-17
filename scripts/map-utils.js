@@ -19,10 +19,28 @@ function addStationToMap(station) {
             riseOnHover: true,
             icon: station.getIcon()
         })
-        .bindPopup(station.getName(), { offset: [0, -10] })
+        .bindPopup(station.getName(), { offset: [0, -10], closeButton: false })
         .on('mouseover', function(e) { this.openPopup() })
         .on('mouseout', function(e) { this.closePopup() })
         .on('click', function(e) { openStationInfo(station.id) })
+        .addTo(map)
+}
+
+function addStartingPointToMap(lat, lon) {
+    if (map.hasLayer(startingPoint))
+        map.removeLayer(startingPoint)
+
+    let removeStartingPointButtonString = '<button type="button" class="btn btn-outline-success"' +
+        'id="removeStartingPointButton" onclick="removeStartingPoint()">Remove Starting Point</button>'
+
+    startingPoint = L.marker([lat, lon], {
+            riseOnHover: true,
+            icon: startingPointIcon
+        })
+        .bindPopup('<div class="justify-content-center d-block text-center">' +
+            removeStartingPointButtonString +
+            '</div>', { offset: [0, -10] })
+        .on('click', function(e) { this.openPopup() })
         .addTo(map)
 }
 
@@ -57,23 +75,43 @@ async function openStationInfo(stationId) {
     $("#stationFree").first().text("Free : " + s.isFree())
     $("#stationCapacity").first().text("Number of chargers : " + s.getNumberOfChargers())
 
+    $("#removeStationButton").remove()
+
+    if (userAdmin)
+        $("#stationInfoModalFooter").append('<button type="button" class="btn btn-danger justify-content-center" id="removeStationButton" onclick="removeStation(' +
+            stationId +
+            ')">REMOVE STATION</button>')
+
     // process chargers
     let keys = Object.keys(s.chargers)
-    for (let i = 0; i < keys.length; i++) {
-        let chargerIndex = (parseInt(i) + 1).toString()
-        let chargerName = "Charger " + chargerIndex
-        let bodyItemTag = createAcordeonSection(chargerIndex, chargerName)
+    if (keys.length != 0) {
+        $("#accordionPanelsChargers").append('<hr>')
+        for (let i = 0; i < keys.length; i++) {
+            const chargerData = s.chargers[keys[i]]
 
-        const chargerData = s.chargers[keys[i]]
-        $("#" + bodyItemTag).append('<h6 class="chargerInfo">Voltage: ' + chargerData.getVoltage() + '</h6>')
-        $("#" + bodyItemTag).append('<h6 class="chargerInfo">Amperage: ' + chargerData.getAmperage() + '</h6>')
-        $("#" + bodyItemTag).append('<h6 class="chargerInfo">Plug type: ' + chargerData.getPlugType() + '</h6>')
+            let chargerIndex = (parseInt(i) + 1).toString()
+            let chargerName = "Charger " + chargerIndex + " TEMP CHARGER ID: " + chargerData.getId()
+            let bodyItemTag = createAcordeonSection(chargerIndex, chargerName)
+
+
+            $("#" + bodyItemTag).append('<h6 class="chargerInfo">Voltage: ' + chargerData.getVoltage() + '</h6>')
+            $("#" + bodyItemTag).append('<h6 class="chargerInfo">Amperage: ' + chargerData.getAmperage() + '</h6>')
+            $("#" + bodyItemTag).append('<h6 class="chargerInfo">Plug type: ' + chargerData.getPlugType() + '</h6>')
+
+            if (userAdmin)
+                $("#" + bodyItemTag).append('<button type="button" class="btn btn-danger justify-content-center" id="removeChargerButton" onclick="removeCharger(' +
+                    chargerData.getId() +
+                    ')">REMOVE CHARGER</button>')
+        }
     }
+
     $("#stationRatingsLink").on("click", function(e) { openStationRate(stationId) })
     $("#addRateButton").on("click", function(e) { submitRate(stationId) })
 
     $("#stationCommentsLink").on("click", function(e) { openStationComments(stationId) })
     $("#addCommentButton").on("click", function(e) { submitComment(stationId) })
+
+    $("#addChargerButton").on("click", function(e) { openAddChargerModal(stationId) })
 
     $("#stationInfoModal").modal("show")
 }
@@ -103,6 +141,11 @@ async function openStationComments(stationId) {
 
         $("#commentsModalBody").append('<p>' + s.comments[i].email + '</p>')
         $("#commentsModalBody").append('<h6><i>' + s.comments[i].comment + '</i></h6>')
+
+        if (userAdmin)
+            $("#commentsModalBody").append('<button type="button" class="btn btn-danger justify-content-center" id="removeCommentButton" onclick="removeComment(' +
+                s.comments[i].id +
+                ')">REMOVE Comment</button>')
     }
 
     $("#stationCommentsModal").modal("show")
@@ -176,4 +219,171 @@ async function submitRate(stationId) {
 
 function cancelStationRate() {
     $("#stationRateModal").modal("hide")
+}
+
+function openPlaceOnMapSelection(arg) {
+    let newStationButtonString = '<button type="button" class="btn btn-outline-primary"' +
+        'id="goToAddStationModalButton" onclick="openAddStationModal(' +
+        arg.latlng.lat + ', ' + arg.latlng.lng +
+        ')">New Station</button>'
+
+    let placeStartingPointButtonString = '<button type="button" class="btn btn-outline-success"' +
+        'id="setStartingPointButton" onclick="setStartingPoint(' +
+        arg.latlng.lat + ', ' + arg.latlng.lng +
+        ')">Set Starting Point</button>'
+
+    L.popup()
+        .setLatLng(arg.latlng)
+        .setContent('<div class="justify-content-center d-block text-center">' +
+            newStationButtonString + '<br>' + placeStartingPointButtonString +
+            '</div>')
+        .openOn(map)
+}
+
+function openAddStationModal(lat, lon) {
+    map.closePopup()
+    $("#submitNewStationButton").on("click", function(e) { addStation(lat, lon) })
+    $("#addStationModal").modal("show")
+}
+
+async function addStation(lat, lon) {
+    $("#submitNewStationButton").off("click")
+    let operator = $("#inputOperator").val();
+    let city = $("#inputCity").val();
+    let street = $("#inputStreet").val();
+    let housenumber = $("#inputHousenumber").val();
+    let isFree = $("input[name=freeOption]:checked").val()
+    let fee = (isFree == "true") ? false : true
+
+
+    let data = JSON.stringify({
+        "longitude": lon,
+        "latitude": lat,
+        "operator": operator,
+        "city": city,
+        "street": street,
+        "housenumber": housenumber,
+        "fee": fee
+    })
+
+    let res = await fetch("http://localhost:3011/stations/new?token=" + session_token, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: data
+    }).then(data => data.json())
+
+    $("#addStationModal").modal("hide")
+}
+
+function openAddChargerModal(stationId) {
+    console.log('entered openAddChargerModal')
+    $("#addChargerButton").off("click")
+    $("#stationInfoModal").modal("hide")
+    $("#submitNewChargerButton").off("click")
+    $("#submitNewChargerButton").on("click", function(e) { addCharger(stationId) })
+    $("#addChargerModal").modal("show")
+}
+
+async function addCharger(stationId) {
+    console.log('entered addCharger')
+    $("#submitNewChargerButton").off("click")
+    let voltage = $("#inputVoltage").val();
+    let amperage = $("#inputAmperage").val();
+    let plugType = $("#inputPlugType").val();
+
+    // if (voltage.length == 0 || amperage == 0 || plugType == 0)
+    //     TODO: error prompt
+
+    let data = JSON.stringify({
+        "station_id": stationId,
+        "voltage": voltage,
+        "amperage": amperage,
+        "plug_type": plugType,
+    })
+
+    let res = await fetch("http://localhost:3011/chargers/new?token=" + session_token, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: data
+    }).then(data => data.json())
+
+    $("#addChargerModal").modal("hide")
+}
+
+async function removeStation(stationId) {
+    $("#removeStationButton").off("click")
+
+    let data = JSON.stringify({
+        "station_id": stationId
+    })
+
+    let res = await fetch("http://localhost:3011/stations/remove?token=" + session_token, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: data
+    }).then(data => data.json())
+
+    $("#stationInfoModal").modal("hide")
+}
+
+async function removeCharger(chargerId) {
+    $("#removeChargerButton").off("click")
+
+    let data = JSON.stringify({
+        "charger_id": chargerId
+    })
+
+    let res = await fetch("http://localhost:3011/chargers/remove?token=" + session_token, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: data
+    }).then(data => data.json())
+
+    $("#stationInfoModal").modal("hide")
+}
+
+async function removeComment(commentId) {
+    $("#removeCommentButton").off("click")
+
+    let data = JSON.stringify({
+        "comment_id": commentId
+    })
+
+    let res = await fetch("http://localhost:3011/comments/remove?token=" + session_token, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: data
+    }).then(data => data.json())
+
+    $("#stationCommentsModal").modal("hide")
+}
+
+function setStartingPoint(lat, lon) {
+    $("#setStartingPointButton").off("click")
+    addStartingPointToMap(lat, lon)
+
+    map.closePopup()
+}
+
+function removeStartingPoint() {
+    $("#removeStartingPointButton").off("click")
+    if (map.hasLayer(startingPoint))
+        map.removeLayer(startingPoint)
+
+    map.closePopup()
 }

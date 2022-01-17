@@ -34,7 +34,7 @@ session_start();
         </div>
     </nav>
     <!-- LOGIN FORM -->
-    <div class="modal  fade show d-block" tabindex="-1" role="dialog">
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header justify-content-center">

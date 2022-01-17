@@ -43,7 +43,7 @@ session_start();
                             <a class="nav-link disabled">Search</a>
                         </li>
                     </ul>
-                    <div id="userLink"><button class="btn">User</button></div>
+                    <div id="userLink"><button class="btn" id="userNameButton" disabled></button></div>
                     <div id="logOutLink"><button class="btn">Log out</button></div>
                 </div>
 
@@ -57,12 +57,14 @@ session_start();
         <div class="modal fade" id="stationInfoModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel1" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header justify-content-center d-block text-center">
                         <h5 class="modal-title" id="stationName"></h5>
+                        <div>
+                            <button type="button" class="btn btn-lg btn-outline-info" id="stationRatingsLink"></button>
+                            <button type="button" class="btn btn-lg btn-outline-warning" id="stationCommentsLink"></button>
+                        </div>
                     </div>
                     <div class="modal-body">
-                        <button type="button" class="btn btn-lg btn-outline-info" id="stationRatingsLink"></button>
-                        <button type="button" class="btn btn-lg btn-outline-warning" id="stationCommentsLink"></button>
                         <h6 class="modal-subtitle" id="stationOperatorName"></h6>
                         <h6 class="modal-subtitle" id="stationCity"></h6>
                         <h6 class="modal-subtitle" id="stationStreet"></h6>
@@ -72,8 +74,13 @@ session_start();
 
                         <div class="accordion" id="accordionPanelsChargers"></div>
 
+                        <hr>
+                        <div class="justify-content-center d-block text-center">
+                            <p>Do you know this place?</p>
+                            <button type="button" class="btn btn-secondary" id="addChargerButton" data-dismiss="modal">Add a charger</button>
+                        </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer justify-content-center" id="stationInfoModalFooter">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeStationInfo()">Close</button>
                     </div>
                 </div>
@@ -83,12 +90,12 @@ session_start();
         <div class="modal fade" id="stationCommentsModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel2" aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable" role="document">
                 <div class="modal-content">
-                    <div class="modal-header" id="commentsModalHead">
+                    <div class="modal-header justify-content-center" id="commentsModalHead">
                     </div>
                     <div class="modal-body" id="commentsModalBody">
 
                     </div>
-                    <div class="modal-footer" id="commentsModalFooter">
+                    <div class="modal-footer justify-content-center" id="commentsModalFooter">
                         <input type="text" class="form-control" id="newCommentBox">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="addCommentButton">Add Comment</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeStationComments()">Close</button>
@@ -100,7 +107,7 @@ session_start();
         <div class="modal fade" id="stationRateModal" tabindex="-1" role="dialog" aria-labelledby="modalLabl3" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <div class="modal-header" id="ratesModalHead">
+                    <div class="modal-header justify-content-center" id="ratesModalHead">
                     </div>
                     <div class="modal-body" id="ratesModalBody">
                         <div class="btn-toolbar justify-content-center" role="toolbar" id="dupa" aria-label="radioControlRate">
@@ -126,9 +133,82 @@ session_start();
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer" id="ratesModalFooter">
+                    <div class="modal-footer justify-content-center" id="ratesModalFooter">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="addRateButton">Rate</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="cancelStationRate()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ADD STATION MODAL -->
+        <div class="modal fade" id="addStationModal" tabindex="-1" role="dialog" aria-labelledby="modalLabl3" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header justify-content-center">
+                        <h5 class="modal-title">Add Station</h5>
+                    </div>
+                    <div class="modal-body justify-content-center">
+                        <form>
+                            <div class="form-group">
+                                <label for="inputOperator">Operator name</label>
+                                <input type="text" class="form-control" id="inputOperator" placeholder="Operator">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputCity">City</label>
+                                <input type="text" class="form-control" id="inputCity" placeholder="City">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputStreet">Street</label>
+                                <input type="text" class="form-control" id="inputStreet" placeholder="Street">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputHousenumber">House number</label>
+                                <input type="text" class="form-control" id="inputHousenumber" placeholder="House number">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputIsFree">Free of charge</label>
+                                <div class="justify-content-center text-center" id="inputIsFree">
+                                    <label class="radio-inline"><input type="radio" name="freeOption" id="isFreeOption" value="true" checked> Free </label>
+                                    <label class="radio-inline"><input type="radio" name="freeOption" id="isNotFreeOption" value="false"> Not free </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer justify-content-center d-block text-center">
+                        <div>
+                            <button type="button" class="btn btn-primary justify-content-center" id="submitNewStationButton">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ADD CHARGER MODAL -->
+        <div class="modal fade" id="addChargerModal" tabindex="-1" role="dialog" aria-labelledby="modalLabl3" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header justify-content-center">
+                        <h5 class="modal-title">Add Charger</h5>
+                    </div>
+                    <div class="modal-body justify-content-center">
+                        <form>
+                            <div class="form-group">
+                                <label for="inputVoltage">Voltage</label>
+                                <input type="text" class="form-control" id="inputVoltage" placeholder="Voltage">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputAmperage">Amperage</label>
+                                <input type="text" class="form-control" id="inputAmperage" placeholder="Amperage">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPlugType">Plug type</label>
+                                <input type="text" class="form-control" id="inputPlugType" placeholder="Plug type">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer justify-content-center d-block text-center">
+                        <div>
+                            <button type="button" class="btn btn-primary justify-content-center" id="submitNewChargerButton">Submit</button>
+                        </div>
                     </div>
                 </div>
             </div>

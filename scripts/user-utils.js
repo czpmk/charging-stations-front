@@ -98,3 +98,12 @@ function getTokenFromCookie() {
     else
         return { "exists": false, "value": '' }
 }
+
+async function getUserInfo(token) {
+    let res = await fetch("http://localhost:3011/user/info?token=" + session_token).then(data => data.json())
+    if (res.valid) {
+        return res.results
+    } else {
+        return false
+    }
+}

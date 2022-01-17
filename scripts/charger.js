@@ -7,6 +7,10 @@ class Charger {
         this.plug_type = data.plug_type;
     }
 
+    getId() {
+        return this.id;
+    }
+
     getPlugType() {
         if (this.plug_type == null || this.plug_type == "")
             return "Unknown"

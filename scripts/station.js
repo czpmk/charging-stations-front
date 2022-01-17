@@ -1,34 +1,34 @@
 class Station {
     static teslaIcon = L.icon({
-        iconUrl: "http://localhost/SIP-projekt/assets/tesla.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/tesla.ico",
         iconSize: [32, 32]
     });
     static orlenIcon = new L.icon({
-        iconUrl: "http://localhost/SIP-projekt/assets/orlen.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/orlen.ico",
         iconSize: [32, 32]
     });
     static energaIcon = new L.icon({
-        iconUrl: "http://localhost/SIP-projekt/assets/energa.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/energa.ico",
         iconSize: [32, 32]
     });
     static greenWayIcon = new L.icon({
-        iconUrl: "http://localhost/SIP-projekt/assets/greenway.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/greenway.ico",
         iconSize: [32, 32]
     });
     static pgeIcon = new L.icon({
-        iconUrl: "http://localhost/SIP-projekt/assets/pge.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/pge.ico",
         iconSize: [32, 32]
     });
     static tauronIcon = new L.icon({
-        iconUrl: "http://localhost/SIP-projekt/assets/tauron.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/tauron.ico",
         iconSize: [32, 32]
     });
     static goEAutoIcon = new L.icon({
-        iconUrl: "http://localhost/SIP-projekt/assets/goeauto.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/goeauto.ico",
         iconSize: [32, 32]
     });
     static unkonwnIcon = L.icon({
-        iconUrl: "http://localhost/SIP-projekt/assets/unknown.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/unknown.ico",
         iconSize: [32, 32]
     });
 
