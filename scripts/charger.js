@@ -5,6 +5,7 @@ class Charger {
         this.voltage = data.voltage;
         this.amperage = data.amperage;
         this.plug_type = data.plug_type;
+        this.power = 0;
     }
 
     getId() {
@@ -15,7 +16,7 @@ class Charger {
         if (this.plug_type == null || this.plug_type == "")
             return "Unknown"
         else
-            return this.plug_type.toString().split("_").join(" ")
+            return this.plug_type
     }
 
     getVoltage() {
@@ -30,5 +31,9 @@ class Charger {
             return "Unknown"
         else
             return this.amperage
+    }
+
+    getPower() {
+        return this.power
     }
 }

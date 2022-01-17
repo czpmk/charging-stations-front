@@ -39,7 +39,7 @@ class Station {
         this.name = station_data.name;
         this.operator = station_data.operator;
         this.fee = station_data.fee;
-        this.capacity = station_data.capacity;
+        // this.capacity = station_data.capacity;
         this.city = station_data.city;
         this.street = station_data.street;
         this.housenumber = station_data.housenumber;
@@ -80,10 +80,14 @@ class Station {
     }
 
     getNumberOfChargers() {
-        if (this.capacity == null || this.capacity == "")
+
+        if (Object.keys(this.chargers).length == 0)
             return 0
-        else
-            return this.capacity
+        else {
+            console.log(this.chargers)
+            return this.chargers.length
+        }
+
     }
 
     getNumberOfComments() {

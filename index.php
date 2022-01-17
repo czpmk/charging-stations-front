@@ -40,7 +40,7 @@ session_start();
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link disabled">Search</a>
+                            <button class="btn" onclick="filterStations()">Search</button>
                         </li>
                     </ul>
                     <div id="userLink"><button class="btn" id="userNameButton" disabled></button></div>
@@ -215,7 +215,7 @@ session_start();
                 </div>
             </div>
         </div>
-        <!-- ADD CHARGER MODAL -->
+        <!-- FILTER STATIONS -->
         <div class="modal fade" id="applyFilterModal" tabindex="-1" role="dialog" aria-labelledby="modalLabl3" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -223,26 +223,25 @@ session_start();
                         <h5 class="modal-title">Filters</h5>
                     </div>
                     <div class="modal-body justify-content-center">
-                        <form>
+                        <form id="filterStationModalForm">
                             <div class="form-group">
-                                <label for="inputName">Name</label>
-                                <input type="text" class="form-control" id="inputName" placeholder="Name">
-                            </div>
-                            <hr>
-                            <div class="form-group">
-                                <label for="inputOperator">Operator name</label>
-                                <input type="text" class="form-control" id="inputAmperage" placeholder="Amperage">
+                                <label for="inputOperatorFilter">Operator name</label>
+                                <input type="text" class="form-control" id="inputOperatorFilter" placeholder="Operator name">
                             </div>
                             <div class="form-group">
-                                <label for="inputPlugType">Plug type</label>
-                                <input type="text" class="form-control" id="inputPlugType" placeholder="Plug type">
+                                <label for="inputPlugTypeFilter">Plug type</label>
+                                <input type="text" class="form-control" id="inputPlugTypeFilter" placeholder="Plug type">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPowerFilter">Power</label>
+                                <input type="text" class="form-control" id="inputPowerFilter" placeholder="Power [kW]">
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer justify-content-center d-block text-center">
                         <div>
-                            <button type="button" class="btn btn-primary justify-content-center" id="applyFiltersButton">Apply</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="cancelNewFilterSubmit()">Cancel</button>
+                            <button type="button" class="btn btn-primary justify-content-center" id="applyFiltersButton" onclick="applyFilters()">Apply</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeFilterButton()">Cancel</button>
                         </div>
                     </div>
                 </div>

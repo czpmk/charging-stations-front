@@ -485,3 +485,112 @@ function removeStartingPoint() {
 
     map.closePopup()
 }
+
+function showFilterStationModal() {
+
+}
+
+function filterStations() {
+    $("#rangeFormInput").remove()
+
+    let rangeFormInput = '<div class="form-group" id="rangeFormInput">' +
+        '<label for="inputRangeFilter">Range</label>'
+
+
+    if (map.hasLayer(startingPoint)) {
+        rangeFormInput += '<input type="text" class="form-control" id="inputRangeFilter" placeholder="Range [km]">'
+    } else
+        rangeFormInput += '<p><i>Place Starting Point on the map to find stations in specified range.</i></p>'
+
+    rangeFormInput += '</div>'
+    $("#filterStationModalForm").append(rangeFormInput)
+
+    $("#applyFilterModal").modal("show")
+}
+
+function applyFilters() {
+    let operator = $("#inputOperatorFilter").val();
+    let plugType = $("#inputPlugTypeFilter").val();
+    let power = $("#inputPowerFilter").val();
+    let range = $("#inputRangeFilter").val();
+
+    let filterByOperator = operator != undefined && operator.length != 0
+    let filterByPlugType = plugType != undefined && plugType.length != 0
+    let filterByPower = power != undefined && power.length != 0
+    let filterByRange = map.hasLayer(startingPoint) && range.length != 0
+
+    if (map.hasLayer(startingPointCircle))
+        map.removeLayer(startingPointCircle)
+
+    let startLon = 0.0
+    let startLat = 0.0
+
+    if (filterByRange) {
+        range = parseFloat(range)
+        let latLng = startingPoint.getLatLng()
+        startLon = latLng.lng
+        startLat = latLng.lat
+        startingPointCircle = L.circle([startLat, startLon], { radius: range * 1000 }).addTo(map)
+    }
+
+    for (const [k, v] of Object.entries(stations)) {
+        let display = true
+
+
+        if (display && filterByOperator)
+            display = v.getOperatorName().toLowerCase().includes(operator.toLowerCase())
+
+        if (display && filterByPlugType) {
+            display = v.getNumberOfChargers() != 0
+
+            if (display) {
+                plugTypeLoop: for (const c in v.chargers) {
+                    display = v.chargers[c].getPlugType().toLowerCase().includes(plugType.toLowerCase())
+                    if (!display)
+                        break plugTypeLoop
+                }
+            }
+        }
+
+        if (display && filterByPower) {
+            powerLoop: for (const c in v.chargers) {
+                if (display = (v.chargers[c].getPower() >= power) == false)
+                    break powerLoop
+            }
+        }
+
+        if (display && filterByRange) {
+            display = lonLatDistance(startLat, startLon, v.lat, v.lon) <= range
+        }
+
+        if (display && !map.hasLayer(v.marker))
+            v.marker.addTo(map)
+
+        else if (!display && map.hasLayer(v.marker))
+            map.removeLayer(v.marker)
+    }
+}
+
+function closeFilterButton() {
+    $("#applyFilterModal").modal("hide")
+}
+
+// source: \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+// https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
+function lonLatDistance(lat1, lon1, lat2, lon2) {
+    let earthRadius = 6371
+    dLat = toRad(lat2 - lat1);
+    dLon = toRad(lon2 - lon1);
+    lat1 = toRad(lat1);
+    lat2 = toRad(lat2);
+
+    a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    d = earthRadius * c;
+    return d;
+}
+
+function toRad(Value) {
+    return Value * Math.PI / 180;
+}
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

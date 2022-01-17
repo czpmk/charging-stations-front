@@ -6,6 +6,7 @@ let session_token = ""
 let map = 0
 let userAdmin = false
 let userEmail = "USR_EMAIL"
+let startingPointCircle = 0
 let startingPoint = 0
 let startingPointIcon = L.icon({
     iconUrl: "http://localhost/charging-stations-front/assets/starting-point.ico",
