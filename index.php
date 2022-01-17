@@ -177,6 +177,7 @@ session_start();
                     <div class="modal-footer justify-content-center d-block text-center">
                         <div>
                             <button type="button" class="btn btn-primary justify-content-center" id="submitNewStationButton">Submit</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="cancelNewStationSubmit()">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -208,6 +209,40 @@ session_start();
                     <div class="modal-footer justify-content-center d-block text-center">
                         <div>
                             <button type="button" class="btn btn-primary justify-content-center" id="submitNewChargerButton">Submit</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="cancelNewChargerSubmit()">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ADD CHARGER MODAL -->
+        <div class="modal fade" id="applyFilterModal" tabindex="-1" role="dialog" aria-labelledby="modalLabl3" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header justify-content-center">
+                        <h5 class="modal-title">Filters</h5>
+                    </div>
+                    <div class="modal-body justify-content-center">
+                        <form>
+                            <div class="form-group">
+                                <label for="inputName">Name</label>
+                                <input type="text" class="form-control" id="inputName" placeholder="Name">
+                            </div>
+                            <hr>
+                            <div class="form-group">
+                                <label for="inputOperator">Operator name</label>
+                                <input type="text" class="form-control" id="inputAmperage" placeholder="Amperage">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPlugType">Plug type</label>
+                                <input type="text" class="form-control" id="inputPlugType" placeholder="Plug type">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer justify-content-center d-block text-center">
+                        <div>
+                            <button type="button" class="btn btn-primary justify-content-center" id="applyFiltersButton">Apply</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="cancelNewFilterSubmit()">Cancel</button>
                         </div>
                     </div>
                 </div>

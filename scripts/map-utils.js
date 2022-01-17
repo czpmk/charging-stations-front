@@ -178,6 +178,7 @@ function closeStationInfo() {
 }
 
 async function openStationComments(stationId) {
+    $("#stationCommentsLink").off('click')
     $("#stationInfoModal").modal("hide")
     let s = stations[stationId]
 
@@ -236,6 +237,8 @@ async function submitComment(stationId) {
 }
 
 function closeStationComments() {
+    $("#stationCommentsLink").off('click')
+    $("#addCommentButton").off("click")
     $("#stationCommentsModal").modal("hide")
 }
 
@@ -279,6 +282,7 @@ async function submitRate(stationId) {
 }
 
 function cancelStationRate() {
+    $("#addRateButton").off("click")
     $("#stationRateModal").modal("hide")
 }
 
@@ -341,8 +345,12 @@ async function addStation(lat, lon) {
     $("#addStationModal").modal("hide")
 }
 
+function cancelNewStationSubmit() {
+    $("#submitNewStationButton").off("click")
+    $("#addStationModal").modal("hide")
+}
+
 function openAddChargerModal(stationId) {
-    console.log('entered openAddChargerModal')
     $("#addChargerButton").off("click")
     $("#stationInfoModal").modal("hide")
     $("#submitNewChargerButton").off("click")
@@ -351,7 +359,6 @@ function openAddChargerModal(stationId) {
 }
 
 async function addCharger(stationId) {
-    console.log('entered addCharger')
     $("#submitNewChargerButton").off("click")
     let voltage = $("#inputVoltage").val();
     let amperage = $("#inputAmperage").val();
@@ -381,7 +388,19 @@ async function addCharger(stationId) {
     $("#addChargerModal").modal("hide")
 }
 
+function cancelNewChargerSubmit() {
+    $("#submitNewChargerButton").off("click")
+    $("#addChargerModal").modal("hide")
+}
+
 async function removeStation(stationId) {
+    $("#stationRatingsLink").off("click")
+    $("#addRateButton").off("click")
+
+    $("#stationCommentsLink").off("click")
+    $("#addCommentButton").off("click")
+
+    $("#addChargerButton").off("click")
     $("#removeStationButton").off("click")
 
     let data = JSON.stringify({
