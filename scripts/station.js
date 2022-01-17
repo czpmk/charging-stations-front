@@ -46,6 +46,7 @@ class Station {
         this.chargers = {};
         this.comments = {};
         this.rates = {};
+        this.marker = 0;
     }
 
     addCharger(charger) {
@@ -152,5 +153,19 @@ class Station {
             default:
                 return Station.unkonwnIcon;
         }
+    }
+
+    getMarker() {
+        return this.marker;
+    }
+
+    removeCharger(chargerId) {
+        if (this.chargers.hasOwnProperty(chargerId))
+            delete this.chargers[chargerId]
+    }
+
+    removeComment(commentId) {
+        if (this.comments.hasOwnProperty(commentId))
+            delete this.comments[commentId]
     }
 }

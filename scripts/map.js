@@ -29,10 +29,10 @@ async function init() {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        await loadStations()
+        await synchronizeDbData()
         $("#userNameButton").text(userEmail)
         $("#logOutLink").on("click", logOut)
-        Object.entries(stations).forEach(([k, v]) => { addStationToMap(v) })
+            // Object.entries(stations).forEach(([k, v]) => { addStationToMap(v) })
         map.setView([eti_coords.lat, eti_coords.lon], 13);
 
     }

@@ -1,21 +1,78 @@
+async function synchronizeDbData(scope) {
+    switch (scope) {
+        case "stations":
+            {
+                await loadStations()
+            }
+        case "chargers":
+            {
+                await loadChargers()
+            }
+        case "comments":
+            {
+                await loadComments()
+            }
+        case "ratings":
+            {
+                await loadRatings()
+            }
+        default:
+            {
+                await loadStations()
+                await loadChargers()
+                await loadComments()
+                await loadRatings()
+            }
+    }
+}
+
 async function loadStations() {
     let stations_resp = await fetch("http://localhost:3011/stations?token=" + session_token).then(data => data.json())
-    let chargers_resp = await fetch("http://localhost:3011/chargers?token=" + session_token).then(data => data.json())
-    let comments_resp = await fetch("http://localhost:3011/comments?token=" + session_token).then(data => data.json())
-    let ratings_resp = await fetch("http://localhost:3011/ratings?token=" + session_token).then(data => data.json())
-    if (!stations_resp.valid || !chargers_resp.valid || !comments_resp.valid || !ratings_resp.valid) {
+    if (!stations_resp.valid) {
         alert("Internal application error - could not get server response")
         return;
     } else {
-        stations_resp.results.forEach(s => { stations[s.id] = new Station(s) })
+        stations_resp.results.forEach(s => {
+            if (!stations.hasOwnProperty(s.id)) {
+                stations[s.id] = new Station(s)
+                addStationToMap(stations[s.id])
+            }
+        })
+    }
+}
+
+async function loadChargers() {
+    let chargers_resp = await fetch("http://localhost:3011/chargers?token=" + session_token).then(data => data.json())
+    if (!chargers_resp.valid) {
+        alert("Internal application error - could not get server response")
+        return;
+    } else {
         chargers_resp.results.forEach(c => { if (stations.hasOwnProperty(c.station_id)) stations[c.station_id].addCharger(c) })
+    }
+}
+
+async function loadComments() {
+    let comments_resp = await fetch("http://localhost:3011/comments?token=" + session_token).then(data => data.json())
+    if (!comments_resp.valid) {
+        alert("Internal application error - could not get server response")
+        return;
+    } else {
         comments_resp.results.forEach(c => { if (stations.hasOwnProperty(c.station_id)) stations[c.station_id].addComment(c) })
+    }
+}
+
+async function loadRatings() {
+    let ratings_resp = await fetch("http://localhost:3011/ratings?token=" + session_token).then(data => data.json())
+    if (!ratings_resp.valid) {
+        alert("Internal application error - could not get server response")
+        return;
+    } else {
         ratings_resp.results.forEach(r => { if (stations.hasOwnProperty(r.station_id)) stations[r.station_id].addRate(r) })
     }
 }
 
 function addStationToMap(station) {
-    L.marker(station.getLonLat(), {
+    station.marker = L.marker(station.getLonLat(), {
             riseOnHover: true,
             icon: station.getIcon()
         })
@@ -90,7 +147,7 @@ async function openStationInfo(stationId) {
             const chargerData = s.chargers[keys[i]]
 
             let chargerIndex = (parseInt(i) + 1).toString()
-            let chargerName = "Charger " + chargerIndex + " TEMP CHARGER ID: " + chargerData.getId()
+            let chargerName = "Charger " + chargerIndex
             let bodyItemTag = createAcordeonSection(chargerIndex, chargerName)
 
 
@@ -100,7 +157,7 @@ async function openStationInfo(stationId) {
 
             if (userAdmin)
                 $("#" + bodyItemTag).append('<button type="button" class="btn btn-danger justify-content-center" id="removeChargerButton" onclick="removeCharger(' +
-                    chargerData.getId() +
+                    chargerData.getId() + ', ' + stationId +
                     ')">REMOVE CHARGER</button>')
         }
     }
@@ -144,7 +201,7 @@ async function openStationComments(stationId) {
 
         if (userAdmin)
             $("#commentsModalBody").append('<button type="button" class="btn btn-danger justify-content-center" id="removeCommentButton" onclick="removeComment(' +
-                s.comments[i].id +
+                s.comments[i].id + ', ' + stationId +
                 ')">REMOVE Comment</button>')
     }
 
@@ -172,6 +229,8 @@ async function submitComment(stationId) {
         },
         body: data
     }).then(data => data.json())
+
+    await synchronizeDbData("comments")
 
     $("#stationCommentsModal").modal("hide")
 }
@@ -213,6 +272,8 @@ async function submitRate(stationId) {
     if (!res.valid && res.message == "OPERATION_NOT_ALLOWED")
         console.log("already rated be the user")
         // TODO implementacja bledu
+
+    await synchronizeDbData("ratings")
 
     $("#stationRateModal").modal("hide")
 }
@@ -275,6 +336,8 @@ async function addStation(lat, lon) {
         body: data
     }).then(data => data.json())
 
+    await synchronizeDbData("stations")
+
     $("#addStationModal").modal("hide")
 }
 
@@ -313,6 +376,8 @@ async function addCharger(stationId) {
         body: data
     }).then(data => data.json())
 
+    await synchronizeDbData("chargers")
+
     $("#addChargerModal").modal("hide")
 }
 
@@ -332,10 +397,16 @@ async function removeStation(stationId) {
         body: data
     }).then(data => data.json())
 
+    map.removeLayer(stations[stationId].marker)
+
+    delete stations[stationId]
+
+    await synchronizeDbData("stations")
+
     $("#stationInfoModal").modal("hide")
 }
 
-async function removeCharger(chargerId) {
+async function removeCharger(chargerId, stationId) {
     $("#removeChargerButton").off("click")
 
     let data = JSON.stringify({
@@ -351,10 +422,14 @@ async function removeCharger(chargerId) {
         body: data
     }).then(data => data.json())
 
+    stations[stationId].removeCharger(chargerId)
+
+    await synchronizeDbData("chargers")
+
     $("#stationInfoModal").modal("hide")
 }
 
-async function removeComment(commentId) {
+async function removeComment(commentId, stationId) {
     $("#removeCommentButton").off("click")
 
     let data = JSON.stringify({
@@ -369,6 +444,10 @@ async function removeComment(commentId) {
         },
         body: data
     }).then(data => data.json())
+
+    stations[stationId].removeComment(commentId)
+
+    await synchronizeDbData("comments")
 
     $("#stationCommentsModal").modal("hide")
 }
