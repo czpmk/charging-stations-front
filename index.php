@@ -197,6 +197,8 @@ session_start();
                                 </div>
                             </div>
                         </form>
+                        <div id="newStationErrorMessage" class='justify-content-center text-center d-block'>
+                        </div>
                     </div>
                     <div class="modal-footer justify-content-center d-block text-center">
                         <div>
@@ -225,6 +227,8 @@ session_start();
                                 <input type="text" class="form-control" id="inputPlugType" placeholder="Plug type">
                             </div>
                         </form>
+                        <div id="newChargerErrorMessage" class='justify-content-center text-center d-block'>
+                        </div>
                     </div>
                     <div class="modal-footer justify-content-center d-block text-center">
                         <div>

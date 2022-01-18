@@ -326,12 +326,14 @@ function openPlaceOnMapSelection(arg) {
 }
 
 function openAddStationModal(lat, lon) {
+    $("#newStationErrorMessage").empty()
     map.closePopup()
     $("#submitNewStationButton").on("click", function(e) { addStation(lat, lon) })
     $("#addStationModal").modal("show")
 }
 
 async function addStation(lat, lon) {
+    $("#newStationErrorMessage").empty()
     $("#submitNewStationButton").off("click")
     let operator = $("#inputOperator").val();
     let city = $("#inputCity").val();
@@ -339,6 +341,30 @@ async function addStation(lat, lon) {
     let housenumber = $("#inputHousenumber").val();
     let isFree = $("input[name=freeOption]:checked").val()
     let fee = (isFree == "true") ? false : true
+
+    operator = operator.normalize()
+    city = city.normalize()
+    street = street.normalize()
+    housenumber = housenumber.normalize()
+
+    let argsList = {
+        'Operator': { 'value': operator, 'maxLength': 64 },
+        'City': { 'value': city, 'maxLength': 64 },
+        'Street': { 'value': street, 'maxLength': 64 },
+        'House number': { 'value': housenumber, 'maxLength': 10 }
+    }
+    for (const key in argsList) {
+        if (argsList[key].value.length == 0) {
+            $("#newStationErrorMessage").append('<p style="color:red">Empty value of <b>' + key + '</b> parameter not allowed</p>')
+            $("#submitNewStationButton").on("click", function(e) { addStation(lat, lon) })
+            return
+        } else if (argsList[key].value.length > argsList[key].maxLength) {
+            $("#newStationErrorMessage").append('<p style="color:red">The value of <b>' + key +
+                '</b> parameter exceeds the length limit of <b>' + argsList[key].maxLength + '</b> characters</p>')
+            $("#submitNewStationButton").on("click", function(e) { addStation(lat, lon) })
+            return
+        }
+    }
 
 
     let data = JSON.stringify({
@@ -371,6 +397,7 @@ function cancelNewStationSubmit() {
 }
 
 function openAddChargerModal(stationId) {
+    $("#newChargerErrorMessage").empty()
     $("#addChargerButton").off("click")
     $("#stationInfoModal").modal("hide")
     $("#submitNewChargerButton").off("click")
@@ -378,13 +405,45 @@ function openAddChargerModal(stationId) {
     $("#addChargerModal").modal("show")
 }
 
+
+const isNumeric = n => !isNaN(n)
+
 async function addCharger(stationId) {
+    $("#newChargerErrorMessage").empty()
     $("#submitNewChargerButton").off("click")
     let power = $("#inputPower").val();
     let plugType = $("#inputPlugType").val();
 
-    // if (power.length == 0 || plugType == 0)
-    //     TODO: error prompt
+    power = power.normalize()
+    plugType = plugType.normalize()
+
+    if (power.length == 0) {
+        $("#newChargerErrorMessage").append('<p style="color:red">Empty value of <b>Power</b> parameter not allowed</p>')
+        $("#submitNewChargerButton").on("click", function(e) { addCharger(stationId) })
+        return
+    } else if (!isNumeric(power)) {
+        $("#newChargerErrorMessage").append('<p style="color:red"><b>Power</b> has to be numeric</p>')
+        $("#submitNewChargerButton").on("click", function(e) { addCharger(stationId) })
+        return
+    }
+
+    power = parseInt(power)
+
+    if (power <= 0) {
+        $("#newChargerErrorMessage").append('<p style="color:red"><b>Power</b> has to be greater then 0</p>')
+        $("#submitNewChargerButton").on("click", function(e) { addCharger(stationId) })
+        return
+    }
+
+    if (plugType.length == 0) {
+        $("#newChargerErrorMessage").append('<p style="color:red">Empty value of <b>Plug type</b> parameter not allowed</p>')
+        $("#submitNewChargerButton").on("click", function(e) { addCharger(stationId) })
+        return
+    } else if (plugType.length > 64) {
+        $("#newChargerErrorMessage").append('<p style="color:red">The value of <b>Plug type</b> parameter exceeds the length limit of <b>64</b> characters</p>')
+        $("#submitNewChargerButton").on("click", function(e) { addCharger(stationId) })
+        return
+    }
 
     let data = JSON.stringify({
         "station_id": stationId,

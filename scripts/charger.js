@@ -3,7 +3,7 @@ class Charger {
         this.id = data.id;
         this.station_id = data.station_id;
         this.plug_type = data.plug_type;
-        this.power = 0;
+        this.power = data.power;
     }
 
     getId() {
