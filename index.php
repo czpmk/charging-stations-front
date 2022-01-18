@@ -53,25 +53,6 @@ session_start();
         <div class="h-100" id="mapSection">
             <div id="map" class="h-100"></div>
         </div>
-        <!-- ALERT MODAL -->
-        <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="modalLabl3" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header justify-content-center">
-                        <h5 class="modal-title" id="alertModalTitle"></h5>
-                    </div>
-                    <div class="modal-body justify-content-center">
-                        <div id="alertModalMessage">
-                        </div>
-                    </div>
-                    <div class="modal-footer justify-content-center d-block text-center">
-                        <div>
-                            <button type="button" class="btn btn-primary justify-content-center" onclick="alertModalHide()">Ok</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <!-- STATION INFO MODAL -->
         <div class="modal fade" id="stationInfoModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel1" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -261,6 +242,8 @@ session_start();
                                 <input type="text" class="form-control" id="inputPowerFilter" placeholder="Power [kW]">
                             </div>
                         </form>
+                        <div id="filterModalError" class='justify-content-center text-center d-block'>
+                        </div>
                     </div>
                     <div class="modal-footer justify-content-center d-block text-center">
                         <div>

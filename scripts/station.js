@@ -83,8 +83,7 @@ class Station {
         if (Object.keys(this.chargers).length == 0)
             return 0
         else {
-            console.log(this.chargers)
-            return this.chargers.length
+            return Object.keys(this.chargers).length
         }
 
     }

@@ -21,6 +21,6 @@ class Charger {
         if (this.power == 0)
             return "Unknown"
         else
-            return this.power
+            return parseFloat(this.power)
     }
 }

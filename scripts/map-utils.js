@@ -149,8 +149,10 @@ async function openStationInfo(stationId) {
             let chargerName = "Charger " + chargerIndex
             let bodyItemTag = createAcordeonSection(chargerIndex, chargerName)
 
-
-            $("#" + bodyItemTag).append('<h6 class="chargerInfo">Power: ' + chargerData.getPower() + '</h6>')
+            let pow = chargerData.getPower()
+            if (chargerData.power != 0)
+                pow += ' kW'
+            $("#" + bodyItemTag).append('<h6 class="chargerInfo">Power: ' + pow + '</h6>')
             $("#" + bodyItemTag).append('<h6 class="chargerInfo">Plug type: ' + chargerData.getPlugType() + '</h6>')
 
             if (userAdmin)
@@ -569,6 +571,7 @@ function showFilterStationModal() {
 
 function filterStations() {
     $("#rangeFormInput").remove()
+    $("#filterModalError").empty()
 
     let rangeFormInput = '<div class="form-group" id="rangeFormInput">' +
         '<label for="inputRangeFilter">Range</label>'
@@ -577,7 +580,7 @@ function filterStations() {
     if (map.hasLayer(startingPoint)) {
         rangeFormInput += '<input type="text" class="form-control" id="inputRangeFilter" placeholder="Range [km]">'
     } else
-        rangeFormInput += '<p><i>Place Starting Point on the map to find stations in specified range.</i></p>'
+        rangeFormInput += '<p><i>Place Starting Point on the map to find stations in a specified range.</i></p>'
 
     rangeFormInput += '</div>'
     $("#filterStationModalForm").append(rangeFormInput)
@@ -586,15 +589,63 @@ function filterStations() {
 }
 
 function applyFilters() {
+    $("#filterModalError").empty()
+
     let operator = $("#inputOperatorFilter").val();
     let plugType = $("#inputPlugTypeFilter").val();
     let power = $("#inputPowerFilter").val();
-    let range = $("#inputRangeFilter").val();
+    let range = map.hasLayer(startingPoint) ? $("#inputRangeFilter").val() : "";
+
+    operator = operator.normalize()
+    plugType = plugType.normalize()
+    power = power.normalize()
+    range = range.normalize()
+
+    if (operator.length > 64) {
+        $("#filterModalError").append('<p style="color:red">The value of <b>Operator</b> parameter exceeds the length limit of <b>64</b> characters</p>')
+        return
+    }
+
+    if (plugType.length > 64) {
+        $("#filterModalError").append('<p style="color:red">The value of <b>Plug type</b> parameter exceeds the length limit of <b>64</b> characters</p>')
+        return
+    }
+
+    if (power.length != 0) {
+        if (!isNumeric(power)) {
+            $("#filterModalError").append('<p style="color:red"><b>Power</b> has to be numeric</p>')
+            return
+        }
+
+        power = parseInt(power)
+
+        if (power <= 0) {
+            $("#filterModalError").append('<p style="color:red"><b>Power</b> has to be greater then 0</p>')
+            return
+        }
+    }
+
+    if (range.length != 0) {
+        if (!isNumeric(range)) {
+            $("#filterModalError").append('<p style="color:red"><b>Range</b> has to be numeric</p>')
+            return
+        }
+
+        range = parseInt(range)
+
+        if (range <= 0) {
+            $("#filterModalError").append('<p style="color:red"><b>Range</b> has to be greater then 0</p>')
+            return
+        }
+    }
 
     let filterByOperator = operator != undefined && operator.length != 0
     let filterByPlugType = plugType != undefined && plugType.length != 0
     let filterByPower = power != undefined && power.length != 0
     let filterByRange = map.hasLayer(startingPoint) && range.length != 0
+
+    let operatorNameSplit = operator.toLowerCase().split(' ')
+    let plugTypeSplit = plugType.toLowerCase().split(' ')
 
     if (map.hasLayer(startingPointCircle))
         map.removeLayer(startingPointCircle)
@@ -614,25 +665,46 @@ function applyFilters() {
         let display = true
 
 
-        if (display && filterByOperator)
-            display = v.getOperatorName().toLowerCase().includes(operator.toLowerCase())
+        if (display && filterByOperator) {
+            for (const element of operatorNameSplit) {
+                if (!v.getOperatorName().toLowerCase().includes(element))
+                    display = false
+            }
+        }
+
 
         if (display && filterByPlugType) {
             display = v.getNumberOfChargers() != 0
 
             if (display) {
+                let atLeastOneGoodCharger = false
                 plugTypeLoop: for (const c in v.chargers) {
-                    display = v.chargers[c].getPlugType().toLowerCase().includes(plugType.toLowerCase())
-                    if (!display)
+                    let allMatch = true
+                    plugTypeNameElemetsLoop: for (const element in plugTypeSplit) {
+                        if (!v.chargers[c].getPlugType().toLowerCase().includes(plugTypeSplit[element])) {
+                            allMatch = false
+                            break plugTypeNameElemetsLoop
+                        }
+                    }
+                    if (allMatch) {
+                        atLeastOneGoodCharger = true
                         break plugTypeLoop
+                    }
                 }
+                display = atLeastOneGoodCharger
             }
         }
 
         if (display && filterByPower) {
-            powerLoop: for (const c in v.chargers) {
-                if (display = (v.chargers[c].getPower() >= power) == false)
-                    break powerLoop
+            if (Object.entries(v.chargers).length == 0)
+                display = false
+            else {
+                powerLoop: for (const c in v.chargers) {
+                    if (parseFloat(v.chargers[c].power) < power) {
+                        display = false
+                        break powerLoop
+                    }
+                }
             }
         }
 
