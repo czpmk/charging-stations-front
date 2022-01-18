@@ -82,8 +82,7 @@ async function logOut() {
         if (res.valid) {
             window.location = 'login.php';
         } else {
-            // TODO repeat?
-            console.log("could not log out")
+            alert('internal application error')
             $("#logOutLink").on("click", logOut)
         }
     });
