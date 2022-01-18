@@ -39,7 +39,6 @@ class Station {
         this.name = station_data.name;
         this.operator = station_data.operator;
         this.fee = station_data.fee;
-        // this.capacity = station_data.capacity;
         this.city = station_data.city;
         this.street = station_data.street;
         this.housenumber = station_data.housenumber;

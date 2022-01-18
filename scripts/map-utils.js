@@ -151,8 +151,7 @@ async function openStationInfo(stationId) {
             let bodyItemTag = createAcordeonSection(chargerIndex, chargerName)
 
 
-            $("#" + bodyItemTag).append('<h6 class="chargerInfo">Voltage: ' + chargerData.getVoltage() + '</h6>')
-            $("#" + bodyItemTag).append('<h6 class="chargerInfo">Amperage: ' + chargerData.getAmperage() + '</h6>')
+            $("#" + bodyItemTag).append('<h6 class="chargerInfo">Power: ' + chargerData.getPower() + '</h6>')
             $("#" + bodyItemTag).append('<h6 class="chargerInfo">Plug type: ' + chargerData.getPlugType() + '</h6>')
 
             if (userAdmin)
@@ -360,17 +359,15 @@ function openAddChargerModal(stationId) {
 
 async function addCharger(stationId) {
     $("#submitNewChargerButton").off("click")
-    let voltage = $("#inputVoltage").val();
-    let amperage = $("#inputAmperage").val();
+    let power = $("#inputPower").val();
     let plugType = $("#inputPlugType").val();
 
-    // if (voltage.length == 0 || amperage == 0 || plugType == 0)
+    // if (power.length == 0 || plugType == 0)
     //     TODO: error prompt
 
     let data = JSON.stringify({
         "station_id": stationId,
-        "voltage": voltage,
-        "amperage": amperage,
+        "power": power,
         "plug_type": plugType,
     })
 

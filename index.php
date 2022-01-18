@@ -29,6 +29,7 @@ session_start();
     <script src="scripts/rate.js"></script>
     <script src="scripts/comment.js"></script>
     <script src="scripts/charger.js"></script>
+    <script src="scripts/error-prompt.js"></script>
 </head>
 
 <body>
@@ -52,6 +53,25 @@ session_start();
         <!-- MAP -->
         <div class="h-100" id="mapSection">
             <div id="map" class="h-100"></div>
+        </div>
+        <!-- ALERT MODAL -->
+        <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="modalLabl3" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header justify-content-center">
+                        <h5 class="modal-title" id="alertModalTitle"></h5>
+                    </div>
+                    <div class="modal-body justify-content-center">
+                        <div id="alertModalMessage">
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-center d-block text-center">
+                        <div>
+                            <button type="button" class="btn btn-primary justify-content-center" onclick="alertModalHide()">Ok</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- STATION INFO MODAL -->
         <div class="modal fade" id="stationInfoModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel1" aria-hidden="true">
@@ -193,12 +213,8 @@ session_start();
                     <div class="modal-body justify-content-center">
                         <form>
                             <div class="form-group">
-                                <label for="inputVoltage">Voltage</label>
-                                <input type="text" class="form-control" id="inputVoltage" placeholder="Voltage">
-                            </div>
-                            <div class="form-group">
-                                <label for="inputAmperage">Amperage</label>
-                                <input type="text" class="form-control" id="inputAmperage" placeholder="Amperage">
+                                <label for="inputPower">Power</label>
+                                <input type="text" class="form-control" id="inputPower" placeholder="Power [kW]">
                             </div>
                             <div class="form-group">
                                 <label for="inputPlugType">Plug type</label>
