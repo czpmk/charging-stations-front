@@ -137,6 +137,14 @@ class Station {
         return (sum / nRates).toFixed(1)
     }
 
+    userAlreadyRated(userId) {
+        for (const [k, v] of Object.entries(this.rates)) {
+            if (v.user_id == userId)
+                return true
+        }
+        return false
+    }
+
     getIcon() {
         switch (this.operator) {
             case 'Tesla':

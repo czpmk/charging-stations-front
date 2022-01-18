@@ -29,7 +29,6 @@ session_start();
     <script src="scripts/rate.js"></script>
     <script src="scripts/comment.js"></script>
     <script src="scripts/charger.js"></script>
-    <script src="scripts/error-prompt.js"></script>
 </head>
 
 <body>
@@ -116,9 +115,12 @@ session_start();
 
                     </div>
                     <div class="modal-footer justify-content-center" id="commentsModalFooter">
+
                         <input type="text" class="form-control" id="newCommentBox">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="addCommentButton">Add Comment</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeStationComments()">Close</button>
+                    </div>
+                    <div id="errorMessage" class='justify-content-center text-center d-block'>
                     </div>
                 </div>
             </div>
@@ -152,6 +154,8 @@ session_start();
                                 <label class="form-check-label" for="rateOption5">5</label>
                             </div>
                         </div>
+                    </div>
+                    <div id="alreadyRatedErrorMessage" class='justify-content-center text-center d-block'>
                     </div>
                     <div class="modal-footer justify-content-center" id="ratesModalFooter">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="addRateButton">Rate</button>

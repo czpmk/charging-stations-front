@@ -119,7 +119,6 @@ function createAcordeonSection(chargerIndex, chargerName) {
 
 async function openStationInfo(stationId) {
     let s = stations[stationId]
-
     $("#accordionPanelsChargers").empty()
 
     $("#stationName").first().text(s.getName())
@@ -162,10 +161,8 @@ async function openStationInfo(stationId) {
     }
 
     $("#stationRatingsLink").on("click", function(e) { openStationRate(stationId) })
-    $("#addRateButton").on("click", function(e) { submitRate(stationId) })
 
     $("#stationCommentsLink").on("click", function(e) { openStationComments(stationId) })
-    $("#addCommentButton").on("click", function(e) { submitComment(stationId) })
 
     $("#addChargerButton").on("click", function(e) { openAddChargerModal(stationId) })
 
@@ -204,7 +201,7 @@ async function openStationComments(stationId) {
                 s.comments[i].id + ', ' + stationId +
                 ')">REMOVE Comment</button>')
     }
-
+    $("#addCommentButton").on("click", function(e) { submitComment(stationId) })
     $("#stationCommentsModal").modal("show")
 }
 
@@ -212,9 +209,16 @@ async function submitComment(stationId) {
     let newComment = $("#newCommentBox").val()
     $("#newCommentBox").val("")
     $("#addCommentButton").off("click")
+    $("#errorMessage").empty()
 
-    if (newComment.length == 0)
+    newComment = newComment.normalize()
+
+    if (newComment.length == 0) {
+        $("#errorMessage").append('<p style="color:red">email or password incorrect</p>')
+        $("#addCommentButton").on("click", function(e) { submitComment(stationId) })
         return
+    }
+
 
     let data = JSON.stringify({
         "station_id": stationId,
@@ -242,7 +246,11 @@ function closeStationComments() {
 }
 
 async function openStationRate(stationId) {
+    $("#alreadyRatedErrorMessage").empty()
+
     $("#stationInfoModal").modal("hide")
+
+    $("#addRateButton").on("click", function(e) { submitRate(stationId) })
     let s = stations[stationId]
 
     $("#ratesModalHead").empty()
@@ -253,6 +261,15 @@ async function openStationRate(stationId) {
 }
 
 async function submitRate(stationId) {
+    $("#alreadyRatedErrorMessage").empty()
+
+
+    if (stations[stationId].userAlreadyRated(userId)) {
+        $("#alreadyRatedErrorMessage").append('<p style="color:red">You\'ve already rated this station</p>')
+        $("#stationRatingsLink").off("click")
+        return
+    }
+
     let newRate = $("input[name=rateOption]:checked").val()
     $("#addRateButton").off("click")
 
@@ -272,8 +289,7 @@ async function submitRate(stationId) {
     }).then(data => data.json())
 
     if (!res.valid && res.message == "OPERATION_NOT_ALLOWED")
-        console.log("already rated be the user")
-        // TODO implementacja bledu
+        alert("internal application error")
 
     await synchronizeDbData("ratings")
 

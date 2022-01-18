@@ -4,6 +4,7 @@ let eti_coords = { "lon": 18.612704654420106, "lat": 54.37165722576064 }
 let stations = {}
 let session_token = ""
 let map = 0
+let userId = 0
 let userAdmin = false
 let userEmail = "USR_EMAIL"
 let startingPointCircle = 0
@@ -22,6 +23,7 @@ async function init() {
         userInfo = (await getUserInfo(session_token))
         userAdmin = userInfo.is_admin;
         userEmail = userInfo.email;
+        userId = userInfo.user_id
 
         map = L.map('map')
         map.on('click', function(e) { openPlaceOnMapSelection(e) })
