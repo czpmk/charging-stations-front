@@ -50,6 +50,8 @@ session_start();
                             <label for="inputPassword">Password</label>
                             <input type="password" class="form-control" id="inputPassword" placeholder="password">
                         </div>
+                        <div id="loginErrorMessage">
+                        </div>
                         <hr>
                         <div class="justify-content-center text-center">
                             <button type="button" class="btn btn-primary justify-content-center" id="logInButton">Log In</button>

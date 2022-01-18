@@ -10,6 +10,7 @@ async function checkIfTokenValid(token) {
 async function login() {
     jQuery(async function() {
         $("#logInButton").off("click")
+        $("#loginErrorMessage").empty()
         let email = $("#inputEmail").val();
         let password = $("#inputPassword").val();
 
@@ -31,8 +32,8 @@ async function login() {
             createCookie(res.token)
             window.location = 'index.php';
         } else {
-            // TODO error prompt
-            console.log("could not log in")
+            $("#loginErrorMessage").append('<p style="color:red">email or password incorrect</p>')
+
             $("#inputPassword").val("")
             $("#logInButton").on("click", login)
         }
@@ -42,6 +43,7 @@ async function login() {
 async function register() {
     jQuery(async function() {
         $("#registerButton").off("click")
+        $("#registerErrorMessage").empty()
         let email = $("#inputEmail").val();
         let password = $("#inputPassword").val();
 
@@ -63,8 +65,8 @@ async function register() {
             createCookie(res.token)
             window.location = 'index.php';
         } else {
-            // TODO error prompt EMAIL ALREADY IN USE, and so on
-            console.log("could not register")
+            $("#registerErrorMessage").append('<p style="color:red">email or password incorrect</p>')
+
             $("#inputPassword").val("")
             $("#registerButton").on("click", register)
         }
