@@ -177,6 +177,7 @@ async function openStationComments(stationId) {
     $("#stationCommentsLink").off('click')
     $("#stationInfoModal").modal("hide")
     let s = stations[stationId]
+    $("#commentErrorMessage").empty()
 
     $("#commentsModalBody").empty()
     $("#commentsModalHead").empty()
@@ -207,18 +208,22 @@ async function openStationComments(stationId) {
 
 async function submitComment(stationId) {
     let newComment = $("#newCommentBox").val()
-    $("#newCommentBox").val("")
     $("#addCommentButton").off("click")
-    $("#errorMessage").empty()
+    $("#commentErrorMessage").empty()
 
     newComment = newComment.normalize()
 
     if (newComment.length == 0) {
-        $("#errorMessage").append('<p style="color:red">email or password incorrect</p>')
+        $("#commentErrorMessage").append('<p style="color:red">Cannot submit an empty comment</p>')
+        $("#addCommentButton").on("click", function(e) { submitComment(stationId) })
+        return
+    } else if (newComment.length > 360) {
+        $("#commentErrorMessage").append('<p style="color:red">Comment length exceeds the limit of 360 characters</p>')
         $("#addCommentButton").on("click", function(e) { submitComment(stationId) })
         return
     }
 
+    $("#newCommentBox").val("")
 
     let data = JSON.stringify({
         "station_id": stationId,

@@ -120,7 +120,7 @@ session_start();
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="addCommentButton">Add Comment</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeStationComments()">Close</button>
                     </div>
-                    <div id="errorMessage" class='justify-content-center text-center d-block'>
+                    <div id="commentErrorMessage" class='justify-content-center text-center d-block'>
                     </div>
                 </div>
             </div>
