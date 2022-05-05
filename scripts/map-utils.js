@@ -32,10 +32,10 @@ async function loadStations() {
         alert("Internal application error - could not get server response")
         return;
     } else {
-        stations_resp.results.forEach(s => {
+        await stations_resp.results.forEach(async s => {
             if (!stations.hasOwnProperty(s.id)) {
-                stations[s.id] = new Station(s)
-                addStationToMap(stations[s.id])
+                stations[s.id] = new Station(s);
+                addStationToMap(stations[s.id]);
             }
         })
     }
@@ -73,13 +73,13 @@ async function loadRatings() {
 
 function addStationToMap(station) {
     station.marker = L.marker(station.getLonLat(), {
-            riseOnHover: true,
-            icon: station.getIcon()
-        })
+        riseOnHover: true,
+        icon: station.getIcon()
+    })
         .bindPopup(station.getName(), { offset: [0, -10], closeButton: false })
-        .on('mouseover', function(e) { this.openPopup() })
-        .on('mouseout', function(e) { this.closePopup() })
-        .on('click', function(e) { openStationInfo(station.id) })
+        .on('mouseover', function (e) { this.openPopup() })
+        .on('mouseout', function (e) { this.closePopup() })
+        .on('click', function (e) { openStationInfo(station.id) })
         .addTo(map)
 }
 
@@ -91,13 +91,13 @@ function addStartingPointToMap(lat, lon) {
         'id="removeStartingPointButton" onclick="removeStartingPoint()">Remove Starting Point</button>'
 
     startingPoint = L.marker([lat, lon], {
-            riseOnHover: true,
-            icon: startingPointIcon
-        })
+        riseOnHover: true,
+        icon: startingPointIcon
+    })
         .bindPopup('<div class="justify-content-center d-block text-center">' +
             removeStartingPointButtonString +
             '</div>', { offset: [0, -10] })
-        .on('click', function(e) { this.openPopup() })
+        .on('click', function (e) { this.openPopup() })
         .addTo(map)
 }
 
@@ -162,11 +162,11 @@ async function openStationInfo(stationId) {
         }
     }
 
-    $("#stationRatingsLink").on("click", function(e) { openStationRate(stationId) })
+    $("#stationRatingsLink").on("click", function (e) { openStationRate(stationId) })
 
-    $("#stationCommentsLink").on("click", function(e) { openStationComments(stationId) })
+    $("#stationCommentsLink").on("click", function (e) { openStationComments(stationId) })
 
-    $("#addChargerButton").on("click", function(e) { openAddChargerModal(stationId) })
+    $("#addChargerButton").on("click", function (e) { openAddChargerModal(stationId) })
 
     $("#stationInfoModal").modal("show")
 }
@@ -204,7 +204,7 @@ async function openStationComments(stationId) {
                 s.comments[i].id + ', ' + stationId +
                 ')">REMOVE Comment</button>')
     }
-    $("#addCommentButton").on("click", function(e) { submitComment(stationId) })
+    $("#addCommentButton").on("click", function (e) { submitComment(stationId) })
     $("#stationCommentsModal").modal("show")
 }
 
@@ -217,11 +217,11 @@ async function submitComment(stationId) {
 
     if (newComment.length == 0) {
         $("#commentErrorMessage").append('<p style="color:red">Cannot submit an empty comment</p>')
-        $("#addCommentButton").on("click", function(e) { submitComment(stationId) })
+        $("#addCommentButton").on("click", function (e) { submitComment(stationId) })
         return
     } else if (newComment.length > 360) {
         $("#commentErrorMessage").append('<p style="color:red">Comment length exceeds the limit of 360 characters</p>')
-        $("#addCommentButton").on("click", function(e) { submitComment(stationId) })
+        $("#addCommentButton").on("click", function (e) { submitComment(stationId) })
         return
     }
 
@@ -257,7 +257,7 @@ async function openStationRate(stationId) {
 
     $("#stationInfoModal").modal("hide")
 
-    $("#addRateButton").on("click", function(e) { submitRate(stationId) })
+    $("#addRateButton").on("click", function (e) { submitRate(stationId) })
     let s = stations[stationId]
 
     $("#ratesModalHead").empty()
@@ -327,10 +327,21 @@ function openPlaceOnMapSelection(arg) {
         .openOn(map)
 }
 
-function openAddStationModal(lat, lon) {
+async function openAddStationModal(lat, lon) {
     $("#newStationErrorMessage").empty()
     map.closePopup()
-    $("#submitNewStationButton").on("click", function(e) { addStation(lat, lon) })
+    let address = await getAddressByCoodrinates(lat, lon);
+    if (address.valid === true) {
+        if (address.results.city !== null)
+            $("#inputCity").val(address.results.city);
+
+        if (address.results.street !== null)
+            $("#inputStreet").val(address.results.street);
+
+        if (address.results.street_number !== null)
+            $("#inputHousenumber").val(address.results.street_number);
+    }
+    $("#submitNewStationButton").on("click", function (e) { addStation(lat, lon) })
     $("#addStationModal").modal("show")
 }
 
@@ -358,12 +369,12 @@ async function addStation(lat, lon) {
     for (const key in argsList) {
         if (argsList[key].value.length == 0) {
             $("#newStationErrorMessage").append('<p style="color:red">Empty value of <b>' + key + '</b> parameter not allowed</p>')
-            $("#submitNewStationButton").on("click", function(e) { addStation(lat, lon) })
+            $("#submitNewStationButton").on("click", function (e) { addStation(lat, lon) })
             return
         } else if (argsList[key].value.length > argsList[key].maxLength) {
             $("#newStationErrorMessage").append('<p style="color:red">The value of <b>' + key +
                 '</b> parameter exceeds the length limit of <b>' + argsList[key].maxLength + '</b> characters</p>')
-            $("#submitNewStationButton").on("click", function(e) { addStation(lat, lon) })
+            $("#submitNewStationButton").on("click", function (e) { addStation(lat, lon) })
             return
         }
     }
@@ -403,7 +414,7 @@ function openAddChargerModal(stationId) {
     $("#addChargerButton").off("click")
     $("#stationInfoModal").modal("hide")
     $("#submitNewChargerButton").off("click")
-    $("#submitNewChargerButton").on("click", function(e) { addCharger(stationId) })
+    $("#submitNewChargerButton").on("click", function (e) { addCharger(stationId) })
     $("#addChargerModal").modal("show")
 }
 
@@ -421,11 +432,11 @@ async function addCharger(stationId) {
 
     if (power.length == 0) {
         $("#newChargerErrorMessage").append('<p style="color:red">Empty value of <b>Power</b> parameter not allowed</p>')
-        $("#submitNewChargerButton").on("click", function(e) { addCharger(stationId) })
+        $("#submitNewChargerButton").on("click", function (e) { addCharger(stationId) })
         return
     } else if (!isNumeric(power)) {
         $("#newChargerErrorMessage").append('<p style="color:red"><b>Power</b> has to be numeric</p>')
-        $("#submitNewChargerButton").on("click", function(e) { addCharger(stationId) })
+        $("#submitNewChargerButton").on("click", function (e) { addCharger(stationId) })
         return
     }
 
@@ -433,17 +444,17 @@ async function addCharger(stationId) {
 
     if (power <= 0) {
         $("#newChargerErrorMessage").append('<p style="color:red"><b>Power</b> has to be greater then 0</p>')
-        $("#submitNewChargerButton").on("click", function(e) { addCharger(stationId) })
+        $("#submitNewChargerButton").on("click", function (e) { addCharger(stationId) })
         return
     }
 
     if (plugType.length == 0) {
         $("#newChargerErrorMessage").append('<p style="color:red">Empty value of <b>Plug type</b> parameter not allowed</p>')
-        $("#submitNewChargerButton").on("click", function(e) { addCharger(stationId) })
+        $("#submitNewChargerButton").on("click", function (e) { addCharger(stationId) })
         return
     } else if (plugType.length > 64) {
         $("#newChargerErrorMessage").append('<p style="color:red">The value of <b>Plug type</b> parameter exceeds the length limit of <b>64</b> characters</p>')
-        $("#submitNewChargerButton").on("click", function(e) { addCharger(stationId) })
+        $("#submitNewChargerButton").on("click", function (e) { addCharger(stationId) })
         return
     }
 
@@ -553,7 +564,6 @@ async function removeComment(commentId, stationId) {
 function setStartingPoint(lat, lon) {
     $("#setStartingPointButton").off("click")
     addStartingPointToMap(lat, lon)
-
     map.closePopup()
 }
 
@@ -722,6 +732,24 @@ function applyFilters() {
 
 function closeFilterButton() {
     $("#applyFilterModal").modal("hide")
+}
+
+async function getAddressByCoodrinates(lat, lng) {
+    let data = JSON.stringify({
+        "longitude": lng,
+        "latitude": lat,
+    })
+
+    let res = await fetch("http://localhost:3011/mapUtils/reverseGeocode?token=" + session_token, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: data
+    }).then(data => data.json())
+
+    return res;
 }
 
 // source: \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
