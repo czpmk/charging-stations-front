@@ -1,4 +1,4 @@
-const chargerOptions = [];
+let chargerOptions = [ "Type 2", "Type 1 combo", "CHAdeMO", "Type 2 combo", "Type 1", "Type 2 combo 2" ];
 
 async function synchronizeDbData(scope) {
     switch (scope) {
@@ -420,6 +420,7 @@ function openAddChargerModal(stationId) {
     $("#selectPlugTypeList").empty();
     $("#inputPlugType").val("");
 
+    chargerOptions.sort();
     for (let o of chargerOptions) {
         $("#selectPlugTypeList").append(`<option value="${o}">${o}</option>`);
     }
@@ -434,6 +435,11 @@ function openAddChargerModal(stationId) {
             $("#inputPlugType").prop("disabled", true);
         }
     });
+
+    if ($("#selectPlugTypeList").val() !== 'other') {
+        $("#inputPlugType").val("");
+        $("#inputPlugType").prop("disabled", true);
+    }
 
     $("#stationInfoModal").modal("hide")
     $("#submitNewChargerButton").off("click")

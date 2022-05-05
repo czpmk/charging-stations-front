@@ -212,7 +212,7 @@ session_start();
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="inputPlugType">Plug type not in the list? Please provide the name</label>
+                                <label for="inputPlugType">Plug type not in the list? Select <i>other</i> and provide the name.</label>
                                 <input type="text" class="form-control" id="inputPlugType" placeholder="Plug type">
                             </div>
                         </form>
