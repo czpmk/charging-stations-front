@@ -204,7 +204,15 @@ session_start();
                                 <input type="text" class="form-control" id="inputPower" placeholder="Power [kW]">
                             </div>
                             <div class="form-group">
-                                <label for="inputPlugType">Plug type</label>
+                            <label for="selectPlugTypeList">Plug type</label>
+                                <select id="selectPlugTypeList" class="form-control">
+                                    <option value="saab">Saab</option>
+                                    <option value="fiat">Fiat</option>
+                                    <option value="audi">Audi</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPlugType">Plug type not in the list? Please provide the name</label>
                                 <input type="text" class="form-control" id="inputPlugType" placeholder="Plug type">
                             </div>
                         </form>

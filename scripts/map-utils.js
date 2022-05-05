@@ -1,3 +1,5 @@
+const chargerOptions = [];
+
 async function synchronizeDbData(scope) {
     switch (scope) {
         case "stations":
@@ -412,6 +414,27 @@ function cancelNewStationSubmit() {
 function openAddChargerModal(stationId) {
     $("#newChargerErrorMessage").empty()
     $("#addChargerButton").off("click")
+
+    const otherOption = 'other'
+
+    $("#selectPlugTypeList").empty();
+    $("#inputPlugType").val("");
+
+    for (let o of chargerOptions) {
+        $("#selectPlugTypeList").append(`<option value="${o}">${o}</option>`);
+    }
+    $("#selectPlugTypeList").append(`<option value="${otherOption}">${otherOption}</option>`);
+
+    $("#selectPlugTypeList").on('change', () => {
+        if ($("#selectPlugTypeList").val() === 'other') {
+            $("#inputPlugType").prop("disabled", false);
+        }
+        else {
+            $("#inputPlugType").val("");
+            $("#inputPlugType").prop("disabled", true);
+        }
+    });
+
     $("#stationInfoModal").modal("hide")
     $("#submitNewChargerButton").off("click")
     $("#submitNewChargerButton").on("click", function (e) { addCharger(stationId) })
@@ -425,7 +448,16 @@ async function addCharger(stationId) {
     $("#newChargerErrorMessage").empty()
     $("#submitNewChargerButton").off("click")
     let power = $("#inputPower").val();
-    let plugType = $("#inputPlugType").val();
+    let plugTypeFromList = $("#selectPlugTypeList").val();
+    let plugTypeFromInput = $("#inputPlugType").val();
+    let plugType = "";
+
+    if (plugTypeFromList !== 'other') {
+        plugType = plugTypeFromList;
+    }
+    else {
+        plugType = plugTypeFromInput;
+    }
 
     power = power.normalize()
     plugType = plugType.normalize()
