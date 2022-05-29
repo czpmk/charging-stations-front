@@ -204,7 +204,7 @@ session_start();
                                 <input type="text" class="form-control" id="inputPower" placeholder="Power [kW]">
                             </div>
                             <div class="form-group">
-                            <label for="selectPlugTypeList">Plug type</label>
+                                <label for="selectPlugTypeList">Plug type</label>
                                 <select id="selectPlugTypeList" class="form-control">
                                     <option value="saab">Saab</option>
                                     <option value="fiat">Fiat</option>
@@ -248,6 +248,18 @@ session_start();
                             <div class="form-group">
                                 <label for="inputPowerFilter">Power</label>
                                 <input type="text" class="form-control" id="inputPowerFilter" placeholder="Power [kW]">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputCityFilter">City</label>
+                                <input type="text" class="form-control" id="inputCityFilter" placeholder="City">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputFreeFilter">Free of charge</label>
+                                <div class="justify-content-center text-center" id="inputFreeFilter">
+                                    <label class="radio-inline"><input type="radio" name="freeOptionFilter" id="isAllOption" value="all" checked> All </label>
+                                    <label class="radio-inline"><input type="radio" name="freeOptionFilter" id="isFreeOption" value="free"> Free </label>
+                                    <label class="radio-inline"><input type="radio" name="freeOptionFilter" id="isNotFreeOption" value="paid"> Paid </label>
+                                </div>
                             </div>
                         </form>
                         <div id="filterModalError" class='justify-content-center text-center d-block'>

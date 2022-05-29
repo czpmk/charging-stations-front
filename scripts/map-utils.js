@@ -642,12 +642,15 @@ function applyFilters() {
     let operator = $("#inputOperatorFilter").val();
     let plugType = $("#inputPlugTypeFilter").val();
     let power = $("#inputPowerFilter").val();
+    let city = $("#inputCityFilter").val();
+    let free = $("input[name=freeOptionFilter]:checked").val()
     let range = map.hasLayer(startingPoint) ? $("#inputRangeFilter").val() : "";
 
     operator = operator.normalize()
     plugType = plugType.normalize()
     power = power.normalize()
     range = range.normalize()
+    city = city.normalize()
 
     if (operator.length > 64) {
         $("#filterModalError").append('<p style="color:red">The value of <b>Operator</b> parameter exceeds the length limit of <b>64</b> characters</p>')
@@ -691,9 +694,12 @@ function applyFilters() {
     let filterByPlugType = plugType != undefined && plugType.length != 0
     let filterByPower = power != undefined && power.length != 0
     let filterByRange = map.hasLayer(startingPoint) && range.length != 0
+    let filterByFree =  free != "both"
+    let filterByCity = city != undefined && city.length != 0
 
     let operatorNameSplit = operator.toLowerCase().split(' ')
     let plugTypeSplit = plugType.toLowerCase().split(' ')
+    let cityNameSplit = city.toLowerCase().split(' ')
 
     if (map.hasLayer(startingPointCircle))
         map.removeLayer(startingPointCircle)
@@ -718,6 +724,20 @@ function applyFilters() {
                 if (!v.getOperatorName().toLowerCase().includes(element))
                     display = false
             }
+        }
+
+        if (display && filterByCity) {
+            for (const element of cityNameSplit) {
+                if (!v.getCity().toLowerCase().includes(element))
+                    display = false
+            }
+        }
+
+        if (display && filterByFree) {
+            if (free === "free" && v.isFree() !== "yes")
+                display = false
+            else if (free === "paid" && v.isFree() !== "no")
+                display = false
         }
 
 
