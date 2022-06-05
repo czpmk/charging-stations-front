@@ -42,6 +42,16 @@ session_start();
                         <li class="nav-item">
                             <button class="btn" onclick="filterStations()">Search</button>
                         </li>
+                        <li class="nav-item">
+                            <button class="btn" id="clearSearchFiltersButton" onclick="clearSearchFilters()" disabled>
+                                Clear Search Filters
+                            </button>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <div id="waitingInfoNavBar"></div>
+                        </li>
                     </ul>
                     <div id="userLink"><button class="btn" id="userNameButton" disabled></button></div>
                     <div id="logOutLink"><button class="btn">Log out</button></div>
@@ -79,6 +89,8 @@ session_start();
                             <p>Do you know this place?</p>
                             <button type="button" class="btn btn-secondary" id="addChargerButton" data-dismiss="modal">Add a charger</button>
                         </div>
+                        <hr>
+                        <div class="justify-content-center d-block text-center" id="showRouteStationInfoDiv"></div>
                     </div>
                     <div class="modal-footer justify-content-center" id="stationInfoModalFooter">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeStationInfo()">Close</button>

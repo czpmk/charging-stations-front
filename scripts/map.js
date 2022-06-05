@@ -10,9 +10,19 @@ let userEmail = "USR_EMAIL"
 let startingPointCircle = 0
 let startingPoint = 0
 let startingPointIcon = L.icon({
-    iconUrl: "http://localhost/charging-stations-front/assets/starting-point.ico",
+    iconUrl: "http://localhost/charging-stations-front/assets/starting-point.png",
     iconSize: [32, 32]
 });
+let endPointCircle = 0
+let endPoint = 0
+let endPointIcon = L.icon({
+    iconUrl: "http://localhost/charging-stations-front/assets/end-point.png",
+    iconSize: [32, 32]
+});
+let stationRouteDict = null
+let selectedStationId = null
+let selectedRoute = null;
+let stationsFiltered = false;
 
 async function init() {
     let token = getTokenFromCookie();
@@ -32,10 +42,12 @@ async function init() {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
+        stationRouteDict = Object()
+        selectedRoute = L.layerGroup().addTo(map);
+
         await synchronizeDbData()
         $("#userNameButton").text(userEmail)
         $("#logOutLink").on("click", logOut)
         map.setView([eti_coords.lat, eti_coords.lon], 13);
-
     }
 }

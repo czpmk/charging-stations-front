@@ -1,34 +1,34 @@
 class Station {
     static teslaIcon = L.icon({
-        iconUrl: "http://localhost/charging-stations-front/assets/tesla.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/tesla.png",
         iconSize: [32, 32]
     });
     static orlenIcon = new L.icon({
-        iconUrl: "http://localhost/charging-stations-front/assets/orlen.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/orlen.png",
         iconSize: [32, 32]
     });
     static energaIcon = new L.icon({
-        iconUrl: "http://localhost/charging-stations-front/assets/energa.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/energa.png",
         iconSize: [32, 32]
     });
     static greenWayIcon = new L.icon({
-        iconUrl: "http://localhost/charging-stations-front/assets/greenway.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/greenway.png",
         iconSize: [32, 32]
     });
     static pgeIcon = new L.icon({
-        iconUrl: "http://localhost/charging-stations-front/assets/pge.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/pge.png",
         iconSize: [32, 32]
     });
     static tauronIcon = new L.icon({
-        iconUrl: "http://localhost/charging-stations-front/assets/tauron.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/tauron.png",
         iconSize: [32, 32]
     });
     static goEAutoIcon = new L.icon({
-        iconUrl: "http://localhost/charging-stations-front/assets/goeauto.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/goeauto.png",
         iconSize: [32, 32]
     });
     static unkonwnIcon = L.icon({
-        iconUrl: "http://localhost/charging-stations-front/assets/unknown.ico",
+        iconUrl: "http://localhost/charging-stations-front/assets/unknown.png",
         iconSize: [32, 32]
     });
 
@@ -46,6 +46,8 @@ class Station {
         this.comments = {};
         this.rates = {};
         this.marker = 0;
+        this.route = null;
+        this.distanceFromStartingPoint = 10000000;
     }
 
     addCharger(charger) {
